@@ -1,0 +1,12 @@
+Juan|Pérez|López|jperez|juan.perez@mail.com|Secreto123|1990-03-15|M|55551234|5555678901|PEPJ900315HDFLRN08|O+|2|Av Reforma|123|A|4501
+María|García|Ramírez|mgarcia|maria.garcia@mail.com|Clave2024|1995-11-02|F|55559876|5555765456|GARM951102MDFRRS07|A-|3|Insurgentes Sur|456|B|4502
+Carlos|Santos|Vega|csantos|carlos.santos@mail.com|Pass2025|1988-07-07|M|55551212|5555789090|SAVC880707HDFTRS01|B+|2|Juarez|78|2|4503
+Ana|Lopez|Diaz|alopez|ana.lopez@mail.com|Clave123|1992-01-01|F|55550000|5555000011|LODA920101MDFTRS01|O-|2|Centro|10|A|4504
+Pedro|Ruiz|Mora|pruiz|pedro.ruiz@mail.com|Secret_01|1991-05-05|M|55550101|5555010199|RUMP910505HDFTRS02|AB+|2|20 de Noviembre|20|3|4505
+Lucia|Nava|Soto|lnava|lucia.nava@mail.com|ClaveX|1993-09-09|F|55550202|5555020202|LUNS930909HDFTRS03|O+|2|Morelos|55|B|4506
+Óscar|Ibarra|Cuevas|oibarra|oscar.ibarra@mail.com|Clave2020|1990-12-12|M|55552301|5550000000|OIBC901212HDFTRS03|B-|2|Allende|80|C|4507
+Rosa|Mejia|Perez|rmejia|rosa.mejia@mail.com|Clave2021|1991-10-10|F|55560000|5556000011|ROME911010MDFTRS04|A+|2|Hidalgo|33|1|4508
+Luis|Diaz|Perez|ldiaz|luis.diaz@mail.com|Clave2022|1992-03-03|M|55561000|5556100011|LUDI920303HDFTRS05|O-|3|Reforma|15|PB|4509
+Elena|Ramos|Lopez|eramos|elena.ramos@mail.com|Clave2023|1993-04-04|F|55562000|5556200011|ELRL930404MDFTRS06|AB-|2|Constitución|14|A|4510
+Mario|Sanchez|Ortiz|msanchez|mario.sanchez@mail.com|Clave2024|1994-06-06|M|55563000|5556300011|MASO940606HDFTRS07|O+|2|Zaragoza|40|2|4511
+Nora|Castro|Rios|ncastro|nora.castro@mail.com|Clave2025|1995-07-07|F|55564000|5556400011|NOCR950707MDFTRS08|A-|2|Reforma|150|C|4512
