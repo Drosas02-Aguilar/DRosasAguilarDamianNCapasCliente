@@ -76,12 +76,14 @@
                                            class="btn btn-sm btn-warning me-1">
                                             <i class="bi bi-pencil-square"></i>
                                         </a>
-                                        <!-- Eliminar con RequestParam -->
-                                        <a th:href="@{/usuario/eliminar(id=${usuario.idUsuario})}"
-                                           class="btn btn-sm btn-danger"
-                                           onclick="return confirm('¿Eliminar al usuario seleccionado?');">
+                                        <a href="#"
+                                           class="btn btn-sm btn-danger js-user-delete"
+                                           th:attr="data-id=${usuario.idUsuario}">
                                             <i class="bi bi-trash"></i>
                                         </a>
+
+
+
                                     </td>
 
                                     <!-- Usuario -->
@@ -202,110 +204,110 @@
             <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
 
             <script>
-//                                               $(document).on('change', '.js-status-toggle', function () {
-//                                                   const $input = $(this);
-//                                                   const id = $input.data('id');
-//                                                   const intentoActivo = $input.is(':checked');
-//
-//                                                   const $cell = $input.closest('.form-switch');
-//                                                   const $badge = $cell.find('.badge').first();
-//                                                   const $row = $input.closest('tr');
-//
-//                                                   // CSRF (Spring Security) — opcional
-//                                                   const token = $('meta[name="_csrf"]').attr('content');
-//                                                   const header = $('meta[name="_csrf_header"]').attr('content');
-//
-//                                                   $input.prop('disabled', true);
-//
-//                                                   $.ajax({
-//                                                       url: `/usuario/${id}/status`,
-//                                                       type: 'PATCH',
-//                                                       data: {activo: intentoActivo},
-//                                                       beforeSend: function (xhr) {
-//                                                           xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
-//                                                           if (token && header)
-//                                                               xhr.setRequestHeader(header, token);
-//                                                       }
-//                                                   })
-//                                                           .done(function (j) {
-//                                                               if (!j || j.ok !== true) {
-//                                                                   throw new Error((j && j.msg) || 'No se pudo actualizar');
-//                                                               }
-//
-//                                                               // Usa lo que confirma el servidor
-//                                                               const activoServer = !!j.activo;
-//                                                               $input.prop('checked', activoServer);
-//
-//                                                               if ($badge.length) {
-//                                                                   $badge
-//                                                                           .text(activoServer ? 'Activo' : 'Inactivo')
-//                                                                           .toggleClass('bg-success', activoServer)
-//                                                                           .toggleClass('bg-secondary', !activoServer);
-//                                                               }
-//                                                               $row.toggleClass('table-secondary', !activoServer);
-//                                                           })
-//                                                           .fail(function (xhr) {
-//                                                               $input.prop('checked', !intentoActivo); // revertir si falla
-//                                                               alert('Error al cambiar estatus: ' + (xhr.responseText || xhr.statusText));
-//                                                           })
-//                                                           .always(function () {
-//                                                               $input.prop('disabled', false);
-//                                                           });
-//                                               });
-          
-            
- $(document).on('change', '.js-status-toggle', function () {
-  const $input = $(this);
-  const id = $input.data('id');
-  const intentoActivo = $input.is(':checked');
 
-  const $cell = $input.closest('.form-switch');
-  const $badge = $cell.find('.badge').first();
-  const $row = $input.closest('tr');
+                $(document).on('change', '.js-status-toggle', function () {
+                    const $input = $(this);
+                    const id = $input.data('id');
+                    const intentoActivo = $input.is(':checked');
 
-  const token = $('meta[name="_csrf"]').attr('content');
-  const header = $('meta[name="_csrf_header"]').attr('content');
+                    const $cell = $input.closest('.form-switch');
+                    const $badge = $cell.find('.badge').first();
+                    const $row = $input.closest('tr');
 
-  $input.prop('disabled', true);
+                    const token = $('meta[name="_csrf"]').attr('content');
+                    const header = $('meta[name="_csrf_header"]').attr('content');
 
-  $.ajax({
-  url: `http://localhost:8080/usuarioapi/setActivo/${id}`,  // <-- nota la "/" después de 8080
-  type: 'PATCH',
-  data: { activo: intentoActivo, usuarioBaja: 'admin' },
-  beforeSend: function (xhr) {
-    xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
-    if (token && header) xhr.setRequestHeader(header, token);
-  }
-})
+                    $input.prop('disabled', true);
 
-  .done(function (r) {
-    // r es Result { correct, errorMessage, ... }
-    if (!r || r.correct !== true) {
-      throw new Error((r && r.errorMessage) || 'No se pudo actualizar');
-    }
+                    $.ajax({
+                        url: `http://localhost:8080/usuarioapi/setActivo/${id}`, // <-- nota la "/" después de 8080
+                        type: 'PATCH',
+                        data: {activo: intentoActivo, usuarioBaja: 'admin'},
+                        beforeSend: function (xhr) {
+                            xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+                            if (token && header)
+                                xhr.setRequestHeader(header, token);
+                        }
+                    })
 
-    const activoServer = intentoActivo; // tu API no regresa el bool, así que usamos lo enviado
-    $input.prop('checked', activoServer);
+                            .done(function (r) {
 
-    if ($badge.length) {
-      $badge
-        .text(activoServer ? 'Activo' : 'Inactivo')
-        .toggleClass('bg-success', activoServer)
-        .toggleClass('bg-secondary', !activoServer);
-    }
-    $row.toggleClass('table-secondary', !activoServer);
-  })
-  .fail(function (xhr) {
-    $input.prop('checked', !intentoActivo); // revertir si falla
-    alert('Error al cambiar estatus: ' + (xhr.responseText || xhr.statusText));
-  })
-  .always(function () {
-    $input.prop('disabled', false);
-  });
-});
+                                if (!r || r.correct !== true) {
+                                    throw new Error((r && r.errorMessage) || 'No se pudo actualizar');
+                                }
 
-            
-            
+                                const activoServer = intentoActivo;
+                                $input.prop('checked', activoServer);
+
+                                if ($badge.length) {
+                                    $badge
+                                            .text(activoServer ? 'Activo' : 'Inactivo')
+                                            .toggleClass('bg-success', activoServer)
+                                            .toggleClass('bg-secondary', !activoServer);
+                                }
+                                $row.toggleClass('table-secondary', !activoServer);
+                            })
+                            .fail(function (xhr) {
+                                $input.prop('checked', !intentoActivo); // revertir si falla
+                                alert('Error al cambiar estatus: ' + (xhr.responseText || xhr.statusText));
+                            })
+                            .always(function () {
+                                $input.prop('disabled', false);
+                            });
+                });
+
+
+// ==== Eliminar Usuario===//
+
+
+                $(document).on('click', '.js-user-delete', function (e) {
+                    e.preventDefault();
+
+                    const $btn = $(this);
+                    const id = $btn.data('id');
+                    if (!id)
+                        return;
+
+                    if (!confirm('¿Eliminar al usuario seleccionado?'))
+                        return;
+
+                    const token = $('meta[name="_csrf"]').attr('content');
+                    const header = $('meta[name="_csrf_header"]').attr('content');
+
+                    $btn.prop('disabled', true);
+
+                    $.ajax({
+                        url: `http://localhost:8080/usuarioapi/delete/${id}`,
+                        type: 'DELETE',
+                        beforeSend: function (xhr) {
+                            xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+                            if (token && header)
+                                xhr.setRequestHeader(header, token);
+                        }
+                    })
+                            .done(function (r, _text, xhr) {
+                                if (xhr.status >= 200 && xhr.status < 300 && r && r.correct === true) {
+                                    // Quita la fila visualmente
+                                    const $row = $btn.closest('tr');
+                                    if ($row.length) {
+                                        $row.remove();
+                                    } else {
+                                        location.reload();
+                                    }
+                                } else {
+                                    alert((r && r.errorMessage) || 'No se pudo eliminar el usuario.');
+                                }
+                            })
+                            .fail(function (xhr) {
+                                alert('Error al eliminar: ' + (xhr.responseText || xhr.statusText));
+                            })
+                            .always(function () {
+                                $btn.prop('disabled', false);
+                            });
+                });
+
+
+
             </script>
 
 

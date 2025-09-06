@@ -801,31 +801,31 @@ public class UsuarioController {
 
 //
 //    // ========================= ELIMINAR USUARIO =========================
-    
-    @GetMapping("eliminar")
-    public String Eliminar(@RequestParam("id") int idUsuario){
-        
-        RestTemplate restTemplate =  new RestTemplate();
-        
-        ResponseEntity<Result<Usuario>> usuarioResponse = restTemplate.exchange(
-        
-        "http://localhost:8080/usuarioapi/delete/{idUsuario}",
-                HttpMethod.DELETE,
-                HttpEntity.EMPTY,
-                new ParameterizedTypeReference<Result<Usuario>>(){},
-                idUsuario);
-        if (usuarioResponse.getStatusCode().is2xxSuccessful() &&
-        usuarioResponse.getBody() != null &&
-        usuarioResponse.getBody().correct) {
-        System.out.println("Dirección eliminada con éxito");
-    } else {
-        System.out.println("Error al eliminar la dirección");
-    }
-        
-                return "redirect:/usuario";           
-         
-    
-    }
+//    
+//    @GetMapping("eliminar")
+//    public String Eliminar(@RequestParam("id") int idUsuario){
+//        
+//        RestTemplate restTemplate =  new RestTemplate();
+//        
+//        ResponseEntity<Result<Usuario>> usuarioResponse = restTemplate.exchange(
+//        
+//        "http://localhost:8080/usuarioapi/delete/{idUsuario}",
+//                HttpMethod.DELETE,
+//                HttpEntity.EMPTY,
+//                new ParameterizedTypeReference<Result<Usuario>>(){},
+//                idUsuario);
+//        if (usuarioResponse.getStatusCode().is2xxSuccessful() &&
+//        usuarioResponse.getBody() != null &&
+//        usuarioResponse.getBody().correct) {
+//        System.out.println("Dirección eliminada con éxito");
+//    } else {
+//        System.out.println("Error al eliminar la dirección");
+//    }
+//        
+//                return "redirect:/usuario";           
+//         
+//    
+//    }
     
 //    // ========================= CASCADAS (CATÁLOGOS) =========================
 //    @GetMapping("getPaises")
