@@ -4,7 +4,7 @@
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layout}">
 
-    <body layout:fragment="body">
+<body layout:fragment="body">
 <div class="container py-4" th:object="${usuario}">
   <!-- Encabezado con foto -->
   <div class="hero mb-4 d-flex align-items-center justify-content-between gap-3">
@@ -28,12 +28,14 @@
     </div>
   </div>
 
-  <!-- Botones de acción -->
+  <!-- Botones de acción (con sentinelas did) -->
   <div class="d-flex flex-wrap gap-2 mb-3">
-    <a class="btn btn-warning" th:href="@{/usuario/editarInfo(idUsuario=${usuario.idUsuario})}">
+    <a class="btn btn-warning"
+       th:href="@{/usuario/formEditable(IdUsuario=${usuario.idUsuario}, did=-1)}">
       <i class="bi bi-person-lines-fill me-1"></i> Editar información de usuario
     </a>
-    <a class="btn btn-success" th:href="@{/usuario/direccion/add(idUsuario=${usuario.idUsuario})}">
+    <a class="btn btn-success"
+       th:href="@{/usuario/formEditable(IdUsuario=${usuario.idUsuario}, did=0)}">
       <i class="bi bi-plus-circle me-1"></i> Agregar dirección
     </a>
     <a class="btn btn-outline-secondary" th:href="@{/usuario}">
@@ -206,17 +208,14 @@
               <td class="text-end">
                 <div class="btn-group btn-group-sm">
                   <a class="btn btn-primary"
-                     th:href="@{/usuario/direccion/edit(idUsuario=${usuario.idUsuario}, idDireccion=${direccion.idDireccion})}">
+                     th:href="@{/usuario/formEditable(IdUsuario=${usuario.idUsuario}, did=${direccion.idDireccion})}">
                     <i class="bi bi-pencil-square"></i>
                   </a>
-                  <a class="btn btn-danger" th:href="@{/usuario/direccion/delete(idUsuario=${usuario.idUsuario}, idDireccion=${direccion.idDireccion})}"
+                  <a class="btn btn-danger"
+                     th:href="@{/usuario/direccion/delete(idUsuario=${usuario.idUsuario}, idDireccion=${direccion.idDireccion})}"
                      onclick="return confirm('¿Eliminar esta dirección?')">
                     <i class="bi bi-trash"></i>
                   </a>
-              
-
-                    
-                    
                 </div>
               </td>
             </tr>
@@ -227,14 +226,13 @@
       <div th:if="${usuario.direcciones == null or #lists.isEmpty(usuario.direcciones)}" class="text-center py-4">
         <i class="bi bi-inboxes display-6 text-muted d-block mb-2"></i>
         <span class="text-muted d-block mb-3">No tiene direcciones registradas</span>
-        <a class="btn btn-success" th:href="@{/usuario/direccion/add(idUsuario=${usuario.idUsuario})}">
+        <a class="btn btn-success"
+           th:href="@{/usuario/formEditable(IdUsuario=${usuario.idUsuario}, did=0)}">
           <i class="bi bi-plus-circle me-1"></i> Agregar dirección
         </a>
       </div>
     </div>
   </div>
-
-  
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
