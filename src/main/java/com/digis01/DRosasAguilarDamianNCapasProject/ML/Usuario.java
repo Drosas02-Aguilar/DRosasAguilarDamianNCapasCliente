@@ -21,7 +21,7 @@ public class Usuario {
     // private String Direccion;
     private String Celular;
     private String Sexo;
-    private String Tiposangre;
+//    private String Tiposangre;
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Date FechaNacimiento;
     public Rol Rol;
@@ -54,7 +54,7 @@ public class Usuario {
 
     public Usuario(int idUsuario, String username, String nombre, String apellidopaterno, String apellidomaterno,
             String email, String password, String telefono, String direccion, String celular, String sexo,
-            String tiposangre, Date fechaNacimiento, int idrol, String curp) {
+             Date fechaNacimiento, int idrol, String curp) {
         this.IdUsuario = idUsuario;
         this.Username = username;
         this.Nombre = nombre;
@@ -67,7 +67,7 @@ public class Usuario {
         // this.Direccion = direccion;
         this.Celular = celular;
         this.Sexo = sexo;
-        this.Tiposangre = tiposangre;
+//        this.Tiposangre = tiposangre;
         this.FechaNacimiento = fechaNacimiento;
         this.direcciones = new ArrayList<>();
     }
@@ -173,13 +173,13 @@ public class Usuario {
         Sexo = sexo;
     }
 
-    public String getTiposangre() {
-        return Tiposangre;
-    }
-
-    public void setTiposangre(String tiposangre) {
-        Tiposangre = tiposangre;
-    }
+//    public String getTiposangre() {
+//        return Tiposangre;
+//    }
+//
+//    public void setTiposangre(String tiposangre) {
+//        Tiposangre = tiposangre;
+//    }
 
     public Date getFechaNacimiento() {
         return FechaNacimiento;

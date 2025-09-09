@@ -162,11 +162,11 @@
                    placeholder="Celular" maxlength="10" required>
           </div>
 
-          <div class="col-md-4">
+<!--          <div class="col-md-4">
             <label class="form-label fw-bold">Tipo de sangre</label>
             <input class="form-control" th:field="*{tiposangre}"
                    placeholder="Ej. O+, A-" maxlength="5">
-          </div>
+          </div>-->
 
           <div class="col-md-4">
             <label class="form-label fw-bold">Rol</label>
@@ -336,11 +336,11 @@
                    placeholder="Celular" maxlength="10" required>
           </div>
 
-          <div class="col-md-4">
+<!--          <div class="col-md-4">
             <label class="form-label fw-bold">Tipo de sangre</label>
             <input class="form-control" th:field="*{tiposangre}"
                    placeholder="Ej. O+, A-" maxlength="5">
-          </div>
+          </div>-->
 
           <div class="col-md-4">
             <label class="form-label fw-bold">Rol</label>
@@ -540,12 +540,12 @@ function TelVal(el){
   if(!/^\d{10}$/.test(v)) return setInvalid(el,'Debe tener 10 dígitos.');
   setValid(el,'✓ Número válido');
 }
-function SangreVal(el){
-  const v=(el.value||'').toUpperCase();
-  if(v==='') return setValid(el,'(Opcional)');
-  if(!/^(A|B|AB|O)[+-]$/.test(v)) return setInvalid(el,'Formato ej. O+, A-');
-  el.value=v; setValid(el,'✓ Formato válido');
-}
+//function SangreVal(el){
+//  const v=(el.value||'').toUpperCase();
+//  if(v==='') return setValid(el,'(Opcional)');
+//  if(!/^(A|B|AB|O)[+-]$/.test(v)) return setInvalid(el,'Formato ej. O+, A-');
+//  el.value=v; setValid(el,'✓ Formato válido');
+//}
 function CalleVal(el){
   const v=(el.value||'').trim();
   if(v.length<3) return setInvalid(el,'Mínimo 3 caracteres.');
@@ -579,7 +579,7 @@ const validators = [
   { sel: '[name="password"]',                  fn: PassVal },
   { sel: '[name="telefono"]',                  fn: TelVal },
   { sel: '[name="celular"]',                   fn: TelVal },
-  { sel: '[name="tiposangre"]',                fn: SangreVal },
+//  { sel: '[name="tiposangre"]',                fn: SangreVal },
   { sel: '[name="rol.idRol"]',                 fn: IdPosVal },
 
   // Dirección (si existe en la vista)
