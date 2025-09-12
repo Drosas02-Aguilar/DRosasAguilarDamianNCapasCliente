@@ -6,6 +6,6 @@ public class Result <T> {
     public String errorMessage;
     public Exception ex;
     public T object;
-    public List<Object> objects;
+    public List<T> objects;
     public String message;
 }

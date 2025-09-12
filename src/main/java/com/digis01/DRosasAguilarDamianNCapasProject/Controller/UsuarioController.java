@@ -9,6 +9,11 @@ import com.digis01.DRosasAguilarDamianNCapasProject.ML.Pais;
 import com.digis01.DRosasAguilarDamianNCapasProject.ML.Result;
 import com.digis01.DRosasAguilarDamianNCapasProject.ML.Rol;
 import com.digis01.DRosasAguilarDamianNCapasProject.ML.Usuario;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.core.ParameterizedTypeReference;
 
 import jakarta.validation.Valid;
 import java.io.BufferedReader;
@@ -20,15 +25,6 @@ import java.util.Collections;
 import java.util.List;
 import java.io.InputStreamReader;
 
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.CellType;
-import org.apache.poi.ss.usermodel.DataFormatter;
-import org.apache.poi.ss.usermodel.DateUtil;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.ss.usermodel.WorkbookFactory;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import java.util.Base64;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,8 +39,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
-import org.apache.poi.ss.usermodel.*;
-import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -76,6 +70,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -89,6 +84,7 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -107,7 +103,8 @@ public class UsuarioController {
                 "http://localhost:8080/usuarioapi",
                 HttpMethod.GET,
                 HttpEntity.EMPTY,
-                new ParameterizedTypeReference<Result<List<Usuario>>>() {}
+                new ParameterizedTypeReference<Result<List<Usuario>>>() {
+        }
         );
 
         if (responseEntity.getStatusCode() == HttpStatusCode.valueOf(200)) {
@@ -124,7 +121,8 @@ public class UsuarioController {
                     "http://localhost:8080/rolapi/getall",
                     HttpMethod.GET,
                     HttpEntity.EMPTY,
-                    new ParameterizedTypeReference<Result<List<Rol>>>() {}
+                    new ParameterizedTypeReference<Result<List<Rol>>>() {
+            }
             );
             Result<List<Rol>> rolesRs = rolesResponse.getBody();
             model.addAttribute("roles", rolesRs != null && rolesRs.correct ? rolesRs.object : java.util.Collections.emptyList());
@@ -163,29 +161,31 @@ public class UsuarioController {
                     "http://localhost:8080/rolapi/getall",
                     HttpMethod.GET,
                     HttpEntity.EMPTY,
-                    new ParameterizedTypeReference<Result<List<Rol>>>() {}
+                    new ParameterizedTypeReference<Result<List<Rol>>>() {
+            }
             );
             ResponseEntity<Result<List<Pais>>> paisesResponse = restTemplate.exchange(
                     "http://localhost:8080/catalogoapi/paises",
                     HttpMethod.GET,
                     HttpEntity.EMPTY,
-                    new ParameterizedTypeReference<Result<List<Pais>>>() {}
+                    new ParameterizedTypeReference<Result<List<Pais>>>() {
+            }
             );
 
             model.addAttribute("Usuario", usuario);
             model.addAttribute("roles",
                     (rolesResponse.getStatusCode().is2xxSuccessful()
-                            && rolesResponse.getBody() != null
-                            && rolesResponse.getBody().correct)
-                            ? rolesResponse.getBody().object
-                            : Collections.emptyList()
+                    && rolesResponse.getBody() != null
+                    && rolesResponse.getBody().correct)
+                    ? rolesResponse.getBody().object
+                    : Collections.emptyList()
             );
             model.addAttribute("paises",
                     (paisesResponse.getStatusCode().is2xxSuccessful()
-                            && paisesResponse.getBody() != null
-                            && paisesResponse.getBody().correct)
-                            ? paisesResponse.getBody().object
-                            : Collections.emptyList()
+                    && paisesResponse.getBody() != null
+                    && paisesResponse.getBody().correct)
+                    ? paisesResponse.getBody().object
+                    : Collections.emptyList()
             );
 
             return "UsuarioForm";
@@ -195,7 +195,8 @@ public class UsuarioController {
                     "http://localhost:8080/usuarioapi/direcciones/{id}",
                     HttpMethod.GET,
                     HttpEntity.EMPTY,
-                    new ParameterizedTypeReference<Result<Usuario>>() {},
+                    new ParameterizedTypeReference<Result<Usuario>>() {
+            },
                     idUsuario
             );
 
@@ -213,8 +214,8 @@ public class UsuarioController {
     // ========================= FORM EDITABLE  (did) =========================
     @GetMapping("formEditable")
     public String formEditable(@RequestParam int IdUsuario,
-                               @RequestParam("did") int did,
-                               Model model) {
+            @RequestParam("did") int did,
+            Model model) {
 
         if (did == -1) {
             // Editar información de usuario (sin dirección)
@@ -222,7 +223,8 @@ public class UsuarioController {
                     "http://localhost:8080/usuarioapi/get/{id}",
                     HttpMethod.GET,
                     HttpEntity.EMPTY,
-                    new ParameterizedTypeReference<Result<Usuario>>() {},
+                    new ParameterizedTypeReference<Result<Usuario>>() {
+            },
                     IdUsuario
             );
             if (!usuarioResp.getStatusCode().is2xxSuccessful()
@@ -243,16 +245,17 @@ public class UsuarioController {
                     "http://localhost:8080/rolapi/getall",
                     HttpMethod.GET,
                     HttpEntity.EMPTY,
-                    new ParameterizedTypeReference<Result<List<Rol>>>() {}
+                    new ParameterizedTypeReference<Result<List<Rol>>>() {
+            }
             );
 
             model.addAttribute("Usuario", u);
             model.addAttribute("roles",
                     (rolesResponse.getStatusCode().is2xxSuccessful()
-                            && rolesResponse.getBody() != null
-                            && rolesResponse.getBody().correct)
-                            ? rolesResponse.getBody().object
-                            : Collections.emptyList()
+                    && rolesResponse.getBody() != null
+                    && rolesResponse.getBody().correct)
+                    ? rolesResponse.getBody().object
+                    : Collections.emptyList()
             );
             return "UsuarioForm";
 
@@ -279,16 +282,17 @@ public class UsuarioController {
                     "http://localhost:8080/catalogoapi/paises",
                     HttpMethod.GET,
                     HttpEntity.EMPTY,
-                    new ParameterizedTypeReference<Result<List<Pais>>>() {}
+                    new ParameterizedTypeReference<Result<List<Pais>>>() {
+            }
             );
 
             model.addAttribute("Usuario", u);
             model.addAttribute("paises",
                     (paisesResponse.getStatusCode().is2xxSuccessful()
-                            && paisesResponse.getBody() != null
-                            && paisesResponse.getBody().correct)
-                            ? paisesResponse.getBody().object
-                            : Collections.emptyList()
+                    && paisesResponse.getBody() != null
+                    && paisesResponse.getBody().correct)
+                    ? paisesResponse.getBody().object
+                    : Collections.emptyList()
             );
             return "UsuarioForm";
 
@@ -298,7 +302,8 @@ public class UsuarioController {
                     "http://localhost:8080/direccionapi/get/{idDireccion}",
                     HttpMethod.GET,
                     HttpEntity.EMPTY,
-                    new ParameterizedTypeReference<Result<Direccion>>() {},
+                    new ParameterizedTypeReference<Result<Direccion>>() {
+            },
                     did
             );
             if (!dirResp.getStatusCode().is2xxSuccessful()
@@ -318,16 +323,17 @@ public class UsuarioController {
                     "http://localhost:8080/catalogoapi/paises",
                     HttpMethod.GET,
                     HttpEntity.EMPTY,
-                    new ParameterizedTypeReference<Result<List<Pais>>>() {}
+                    new ParameterizedTypeReference<Result<List<Pais>>>() {
+            }
             );
 
             model.addAttribute("Usuario", u);
             model.addAttribute("paises",
                     (paisesResponse.getStatusCode().is2xxSuccessful()
-                            && paisesResponse.getBody() != null
-                            && paisesResponse.getBody().correct)
-                            ? paisesResponse.getBody().object
-                            : Collections.emptyList()
+                    && paisesResponse.getBody() != null
+                    && paisesResponse.getBody().correct)
+                    ? paisesResponse.getBody().object
+                    : Collections.emptyList()
             );
             return "UsuarioForm";
         }
@@ -336,9 +342,9 @@ public class UsuarioController {
     // ========================= POST UNIFICADO () =========================
     @PostMapping("add")
     public String Add(@Valid @ModelAttribute("Usuario") Usuario usuario,
-                      BindingResult bindingResult,
-                      Model model,
-                      @RequestParam(name = "userFotoInput", required = false) MultipartFile imagen) {
+            BindingResult bindingResult,
+            Model model,
+            @RequestParam(name = "userFotoInput", required = false) MultipartFile imagen) {
 
         // Sentinel seguro (NO comparar con null: getIdDireccion() es int)
         int idUsuario = usuario.getIdUsuario();
@@ -358,28 +364,30 @@ public class UsuarioController {
                         "http://localhost:8080/rolapi/getall",
                         HttpMethod.GET,
                         HttpEntity.EMPTY,
-                        new ParameterizedTypeReference<Result<List<Rol>>>() {}
+                        new ParameterizedTypeReference<Result<List<Rol>>>() {
+                }
                 );
                 ResponseEntity<Result<List<Pais>>> paisesResponse = restTemplate.exchange(
                         "http://localhost:8080/catalogoapi/paises",
                         HttpMethod.GET,
                         HttpEntity.EMPTY,
-                        new ParameterizedTypeReference<Result<List<Pais>>>() {}
+                        new ParameterizedTypeReference<Result<List<Pais>>>() {
+                }
                 );
                 model.addAttribute("Usuario", usuario);
                 model.addAttribute("roles",
                         (rolesResponse.getStatusCode().is2xxSuccessful()
-                                && rolesResponse.getBody() != null
-                                && rolesResponse.getBody().correct)
-                                ? rolesResponse.getBody().object
-                                : Collections.emptyList()
+                        && rolesResponse.getBody() != null
+                        && rolesResponse.getBody().correct)
+                        ? rolesResponse.getBody().object
+                        : Collections.emptyList()
                 );
                 model.addAttribute("paises",
                         (paisesResponse.getStatusCode().is2xxSuccessful()
-                                && paisesResponse.getBody() != null
-                                && paisesResponse.getBody().correct)
-                                ? paisesResponse.getBody().object
-                                : Collections.emptyList()
+                        && paisesResponse.getBody() != null
+                        && paisesResponse.getBody().correct)
+                        ? paisesResponse.getBody().object
+                        : Collections.emptyList()
                 );
                 return "UsuarioForm";
             }
@@ -393,7 +401,8 @@ public class UsuarioController {
                         byte[] bytes = imagen.getBytes();
                         String base64Image = java.util.Base64.getEncoder().encodeToString(bytes);
                         usuario.setImagen(base64Image);
-                    } catch (Exception ex) { /* swallow */ }
+                    } catch (Exception ex) {
+                        /* swallow */ }
                 }
             }
 
@@ -405,7 +414,8 @@ public class UsuarioController {
                     "http://localhost:8080/usuarioapi/agregar",
                     HttpMethod.POST,
                     entity,
-                    new ParameterizedTypeReference<Result<Usuario>>() {}
+                    new ParameterizedTypeReference<Result<Usuario>>() {
+            }
             );
 
             return "redirect:/usuario";
@@ -420,15 +430,16 @@ public class UsuarioController {
                         "http://localhost:8080/rolapi/getall",
                         HttpMethod.GET,
                         HttpEntity.EMPTY,
-                        new ParameterizedTypeReference<Result<List<Rol>>>() {}
+                        new ParameterizedTypeReference<Result<List<Rol>>>() {
+                }
                 );
                 model.addAttribute("Usuario", usuario);
                 model.addAttribute("roles",
                         (rolesResponse.getStatusCode().is2xxSuccessful()
-                                && rolesResponse.getBody() != null
-                                && rolesResponse.getBody().correct)
-                                ? rolesResponse.getBody().object
-                                : Collections.emptyList()
+                        && rolesResponse.getBody() != null
+                        && rolesResponse.getBody().correct)
+                        ? rolesResponse.getBody().object
+                        : Collections.emptyList()
                 );
                 return "UsuarioForm";
             }
@@ -441,7 +452,8 @@ public class UsuarioController {
                         byte[] bytes = imagen.getBytes();
                         String base64Image = java.util.Base64.getEncoder().encodeToString(bytes);
                         usuario.setImagen(base64Image);
-                    } catch (Exception ex) { /* swallow */ }
+                    } catch (Exception ex) {
+                        /* swallow */ }
                 }
             }
 
@@ -453,7 +465,8 @@ public class UsuarioController {
                     "http://localhost:8080/usuarioapi/update/{id}",
                     HttpMethod.PUT,
                     entity,
-                    new ParameterizedTypeReference<Result<Usuario>>() {},
+                    new ParameterizedTypeReference<Result<Usuario>>() {
+            },
                     idUsuario
             );
 
@@ -480,7 +493,8 @@ public class UsuarioController {
                     "http://localhost:8080/direccionapi/usuario/{idUsuario}/agregar",
                     HttpMethod.POST,
                     entity,
-                    new ParameterizedTypeReference<Result<Direccion>>() {},
+                    new ParameterizedTypeReference<Result<Direccion>>() {
+            },
                     idUsuario
             );
 
@@ -506,7 +520,8 @@ public class UsuarioController {
                     "http://localhost:8080/direccionapi/update/{idDireccion}",
                     HttpMethod.PUT,
                     entity,
-                    new ParameterizedTypeReference<Result<Direccion>>() {},
+                    new ParameterizedTypeReference<Result<Direccion>>() {
+            },
                     idDireccion
             );
 
@@ -523,11 +538,193 @@ public class UsuarioController {
                 "http://localhost:8080/direccionapi/delete/{idDireccion}",
                 HttpMethod.DELETE,
                 HttpEntity.EMPTY,
-                new ParameterizedTypeReference<Result<Direccion>>() {},
+                new ParameterizedTypeReference<Result<Direccion>>() {
+        },
                 idDireccion
         );
         // (log opcional)
         return "redirect:/usuario/action/" + idUsuario;
+    }
+   
+    //=================== CARGA MASIVA ===============================
+
+
+   @GetMapping("cargamasiva")
+    public String verCargaMasiva(Model model) {
+        if (!model.containsAttribute("uploadOk")) {
+            model.addAttribute("uploadOk", false);
+        }
+        if (!model.containsAttribute("listaErrores")) {
+            model.addAttribute("listaErrores", java.util.Collections.emptyList());
+        }
+        return "CargaMasiva"; // templates/CargaMasiva.html
+    }
+
+    // ===== SUBIR ARCHIVO (registra el job en el API) =====
+    @PostMapping("cargamasiva")
+    public String subirCargaMasiva(@RequestParam("archivo") MultipartFile archivo,
+                                   @RequestParam(value = "sobrescribir", defaultValue = "false") boolean sobrescribir,
+                                   Model model,
+                                   RedirectAttributes ra) {
+        try {
+            if (archivo == null || archivo.isEmpty()) {
+                ra.addFlashAttribute("error", "Selecciona un archivo .xlsx o .txt");
+                return "redirect:/usuario/cargamasiva";
+            }
+
+            HttpHeaders reqHeaders = new HttpHeaders();
+            reqHeaders.setContentType(MediaType.MULTIPART_FORM_DATA);
+            reqHeaders.setAccept(List.of(MediaType.APPLICATION_JSON));
+
+            ByteArrayResource filePart = new ByteArrayResource(archivo.getBytes()) {
+                @Override public String getFilename() { return archivo.getOriginalFilename(); }
+            };
+
+            MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
+            body.add("file", filePart);
+            body.add("sobrescribir", String.valueOf(sobrescribir));
+
+            HttpEntity<MultiValueMap<String, Object>> req = new HttpEntity<>(body, reqHeaders);
+
+            ResponseEntity<Map<String, Object>> resp = restTemplate.exchange(
+                    "http://localhost:8080/usuarioapi/cargamasiva",
+                    HttpMethod.POST,
+                    req,
+                    new ParameterizedTypeReference<Map<String, Object>>() {}
+            );
+
+            Map<String, Object> job = resp.getBody();
+            if (job == null) {
+                ra.addFlashAttribute("error", "El API no devolvió respuesta.");
+                return "redirect:/usuario/cargamasiva";
+            }
+
+            String status = String.valueOf(job.getOrDefault("status", ""));
+            if ("ERROR".equalsIgnoreCase(status)) {
+                // Mostrar tabla en la misma vista (sin redirigir)
+                prepararTablaDesdeUploadError(job, model);
+                return "CargaMasiva";
+            }
+
+            model.addAttribute("uploadOk", true);
+            model.addAttribute("job", job); // debe contener 'id'
+            return "CargaMasiva";
+
+        } catch (HttpStatusCodeException ex) {
+            // Parsear JSON del API (409, 400, etc.) y renderizar tabla
+            Map<String, Object> job = parseJsonSafely(ex.getResponseBodyAsString());
+            if (job != null) {
+                prepararTablaDesdeUploadError(job, model);
+                return "CargaMasiva";
+            }
+            ra.addFlashAttribute("error", "No se pudo subir el archivo (HTTP " + ex.getRawStatusCode() + ").");
+            return "redirect:/usuario/cargamasiva";
+        } catch (Exception ex) {
+            ra.addFlashAttribute("error", "No se pudo subir el archivo: " + ex.getMessage());
+            return "redirect:/usuario/cargamasiva";
+        }
+    }
+
+    // ===== PROCESAR JOB (ejecuta inserciones en el API) =====
+    @PostMapping("cargamasiva/procesar/{id}")
+    public String procesarCargaMasiva(@PathVariable String id,
+                                      Model model,
+                                      RedirectAttributes ra) {
+        try {
+            HttpHeaders headers = new HttpHeaders();
+            headers.setAccept(List.of(MediaType.APPLICATION_JSON));
+            HttpEntity<Void> req = new HttpEntity<>(headers);
+
+            ResponseEntity<Map<String, Object>> resp = restTemplate.exchange(
+                    "http://localhost:8080/usuarioapi/cargamasiva/procesar/{id}",
+                    HttpMethod.POST,
+                    req,
+                    new ParameterizedTypeReference<Map<String, Object>>() {},
+                    id
+            );
+
+            Map<String, Object> job = resp.getBody();
+            if (job == null) {
+                ra.addFlashAttribute("error", "Sin respuesta del API al procesar.");
+                return "redirect:/usuario/cargamasiva";
+            }
+
+            String status = String.valueOf(job.getOrDefault("status", ""));
+            @SuppressWarnings("unchecked")
+            List<Map<String, Object>> errores =
+                    (List<Map<String, Object>>) job.getOrDefault("errores", List.of());
+
+            boolean ok = "PROCESADO".equalsIgnoreCase(status) && (errores == null || errores.isEmpty());
+
+            model.addAttribute("archivoCorrecto", ok);
+            model.addAttribute("listaErrores", errores != null ? errores : List.of());
+            model.addAttribute("resultado", job); // ej: resultado['insertados'], ['ignorados']
+            return "CargaMasiva";
+
+        } catch (HttpStatusCodeException ex) {
+            Map<String, Object> job = parseJsonSafely(ex.getResponseBodyAsString());
+            if (job != null) {
+                // También renderiza como tabla si el procesado devolvió error
+                String status = String.valueOf(job.getOrDefault("status", ""));
+                @SuppressWarnings("unchecked")
+                List<Map<String, Object>> errores =
+                        (List<Map<String, Object>>) job.getOrDefault("errores", List.of());
+                boolean ok = "PROCESADO".equalsIgnoreCase(status) && (errores == null || errores.isEmpty());
+
+                model.addAttribute("archivoCorrecto", ok);
+                model.addAttribute("listaErrores", errores != null ? errores : List.of());
+                model.addAttribute("resultado", job);
+                return "CargaMasiva";
+            }
+            ra.addFlashAttribute("error", "Error al procesar (HTTP " + ex.getRawStatusCode() + ").");
+            return "redirect:/usuario/cargamasiva";
+        } catch (Exception ex) {
+            ra.addFlashAttribute("error", "Error al procesar: " + ex.getMessage());
+            return "redirect:/usuario/cargamasiva";
+        }
+    }
+
+    // ===== Helpers =====
+
+    private void prepararTablaDesdeUploadError(Map<String, Object> job, Model model) {
+        String obs = String.valueOf(job.getOrDefault("observacion", "Error al registrar la carga."));
+        String filename = String.valueOf(job.getOrDefault("filename", ""));
+        String sha1 = String.valueOf(job.getOrDefault("sha1", ""));
+
+        // Resumen para el panel "Resultado"
+        Map<String, Object> resumen = Map.of(
+                "status", "ERROR",
+                "observacion", obs,
+                "insertados", 0,
+                "actualizados", 0,
+                "ignorados", 0,
+                "filename", filename,
+                "sha1", sha1
+        );
+
+        // Tabla: un renglón genérico (porque en UPLOAD el API no manda errores por fila)
+        Map<String, Object> renglon = Map.of(
+                "fila", "-",
+                "campo", "ARCHIVO",
+                "mensaje", obs
+        );
+
+        model.addAttribute("uploadOk", false);
+        model.addAttribute("job", null);
+        model.addAttribute("resultado", resumen);
+        model.addAttribute("listaErrores", List.of(renglon));
+        // Opcional: también puedes pasar un tip para la vista
+        model.addAttribute("error", null);
+    }
+
+    private Map<String, Object> parseJsonSafely(String json) {
+        try {
+            if (json == null || json.isBlank()) return null;
+            com.fasterxml.jackson.databind.ObjectMapper om = new com.fasterxml.jackson.databind.ObjectMapper();
+            return om.readValue(json, new com.fasterxml.jackson.core.type.TypeReference<Map<String, Object>>() {});
+        } catch (Exception e) {
+            return null;
+        }
     }
 
 
@@ -555,7 +752,6 @@ public class UsuarioController {
 //        return "UsuarioIndex";
 //    }
 //
-
 //
 //    // ========================= ELIMINAR USUARIO =========================
 //    
@@ -583,7 +779,6 @@ public class UsuarioController {
 //         
 //    
 //    }
-    
 //    // ========================= CASCADAS (CATÁLOGOS) =========================
 //    @GetMapping("getPaises")
 //    @ResponseBody
@@ -687,9 +882,7 @@ public class UsuarioController {
 //        out.put("objects", Collections.emptyList());
 //        return out;
 //    }
-
     // ========================= ELIMINAR DIRECCIÓN =========================
-    
 //    @GetMapping("direccion/delete")
 //public String DireccionDelete(@RequestParam int idDireccion, @RequestParam int idUsuario) {
 //    RestTemplate restTemplate = new RestTemplate();                            
@@ -713,7 +906,6 @@ public class UsuarioController {
 //
 //        return "redirect:/usuario/editarUsuario?idUsuario=" + idUsuario;
 //}
-
     //============== STATUS =========================
     //    @PatchMapping("{id}/status")
 //    @ResponseBody

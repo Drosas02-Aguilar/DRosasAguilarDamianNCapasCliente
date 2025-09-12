@@ -1,9 +1,35 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org"
-      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      layout:decorate="~{layout}">
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Carga Masiva de Usuarios</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <body layout:fragment="body">
+  <!-- Bootstrap / Icons -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+
+  <!-- jQuery (si lo usas en el resto del proyecto) -->
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+
+  <style>
+    :root{ --grad-a:#0d6efd; --grad-b:#6610f2; --card-shadow:0 10px 24px rgba(0,0,0,.06); }
+    body{ background:#f6f7fb; }
+    .hero{
+      background: radial-gradient(1200px 600px at top left, #0d6efd22, transparent),
+                  linear-gradient(90deg, var(--grad-a) 0%, var(--grad-b) 100%);
+      color:#fff; border-radius:1rem; padding:1.75rem 1.25rem;
+    }
+    .card{ border:0; box-shadow:var(--card-shadow); border-radius:1rem; }
+    .btn-gradient{ background:linear-gradient(90deg, var(--grad-a), var(--grad-b)); color:#fff; border:0; }
+    .btn-gradient:hover{ filter:brightness(1.05); color:#fff; }
+    .hint{ color:#6c757d; }
+    .drop-zone{ border:2px dashed #ced4da; border-radius:.75rem; padding:1.5rem; background:#fff; transition:.2s; text-align:center; }
+    .drop-zone.dragover{ border-color:var(--grad-a); background:#f0f6ff; }
+    .file-name{ font-weight:600; }
+    code { background: #f1f3f5; padding: .1rem .35rem; border-radius: .35rem; }
+  </style>
+</head>
 <body>
   <div class="container py-4">
 
@@ -11,22 +37,28 @@
     <div class="hero mb-4 d-flex align-items-center justify-content-between gap-3">
       <div>
         <h1 class="h4 mb-1"><i class="bi bi-file-arrow-up me-2"></i>Carga masiva de usuarios</h1>
-        <p class="mb-0 opacity-75">Sube un archivo Excel o TXT con el formato esperado para registrar alumnos en lote.</p>
+        <p class="mb-0 opacity-75">Sube un archivo Excel o TXT con el formato esperado para registrar usuarios en lote.</p>
       </div>
     </div>
+
+    <!-- Alertas globales -->
+    <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
+    <div th:if="${message}" class="alert alert-success" th:text="${message}"></div>
 
     <!-- Card principal -->
     <div class="card">
       <div class="card-body">
+
         <!-- Paso 1: Mostrar Formulario -->
-        <div class="text-center">
+        <div class="text-center" th:if="${uploadOk == null or uploadOk == false}">
           <button id="mostrarFormulario" class="btn btn-gradient btn-lg">
             <i class="bi bi-plus-circle me-1"></i> Mostrar formulario
           </button>
         </div>
 
         <!-- Paso 2: Botones de tipo de archivo -->
-        <div id="botones" class="row justify-content-center mt-4" style="display:none;">
+        <div id="botones" class="row justify-content-center mt-4" style="display:none;"
+             th:if="${uploadOk == null or uploadOk == false}">
           <div class="col-md-8">
             <div class="d-grid d-md-flex gap-2 justify-content-center">
               <button class="btn btn-success px-4" id="btnExcel">
@@ -41,10 +73,14 @@
         </div>
 
         <!-- Paso 3: Formulario de carga -->
-        <div id="formularioArchivo" class="row justify-content-center mt-3" style="display:none;">
+        <div id="formularioArchivo" class="row justify-content-center mt-3" style="display:none;"
+             th:if="${uploadOk == null or uploadOk == false}">
           <div class="col-lg-8">
-            <!-- De acuerdo a tu proyecto: /usuario/cargamasiva -->
-            <form th:action="@{/usuario/cargamasiva}" action="/usuario/cargamasiva" method="post" enctype="multipart/form-data" id="formCarga">
+            <!-- Acción: /usuario/cargamasiva -->
+            <form th:action="@{/usuario/cargamasiva}" action="/usuario/cargamasiva" method="post"
+                  enctype="multipart/form-data" id="formCarga">
+              <input th:if="${_csrf != null}" type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+
               <div id="dropZone" class="drop-zone mb-3">
                 <div class="mb-2"><i class="bi bi-cloud-arrow-up display-6"></i></div>
                 <p class="mb-1">Arrastra y suelta tu archivo aquí</p>
@@ -54,6 +90,14 @@
                   <input type="file" id="archivo" name="archivo" class="d-none" accept=".xlsx,.txt">
                 </label>
                 <div id="fileInfo" class="mt-2 small text-muted">Ningún archivo seleccionado</div>
+              </div>
+
+              <!-- Sobrescribir -->
+              <div class="form-check mb-3">
+                <input class="form-check-input" type="checkbox" id="sobrescribir" name="sobrescribir" />
+                <label class="form-check-label" for="sobrescribir">
+                  Sobrescribir registros existentes (si aplica)
+                </label>
               </div>
 
               <!-- Alertas -->
@@ -70,7 +114,7 @@
                 <ul class="mb-0 small">
                   <li>Para <span class="fw-semibold">Excel</span>: extensión <code>.xlsx</code>.</li>
                   <li>Para <span class="fw-semibold">TXT</span>: extensión <code>.txt</code>, campos separados según tu especificación.</li>
-                  <li>Asegúrate de respetar el orden y los encabezados requeridos.</li>
+                  <li>Respeta el orden de columnas requerido por tu API.</li>
                 </ul>
               </div>
 
@@ -87,40 +131,115 @@
           </div>
         </div>
 
-        <!-- ===== Resultado de validación (tu bloque) ===== -->
-        <div class="mt-4" th:if="${archivoCorrecto!= null}">
-          <div th:if="${listaErrores.isEmpty()}">
-            <h4>Archivo correcto: </h4>
-            <!-- Ruta corregida a USUARIO -->
-            <a th:href="@{/usuario/cargamasiva/procesar}" class="btn btn-success">Procesar archivo</a>
+        <!-- Sección que se muestra tras subir (uploadOk) -->
+        <div class="mt-4" th:if="${uploadOk == true}">
+          <div class="alert alert-success">
+            Archivo cargado. Puedes iniciar el procesamiento.
           </div>
-          <div th:unless="${listaErrores.isEmpty()}">
-            <h4>Archivo incorrecto: </h4>
-            <table class="table table-responsive table-bordered">
-              <thead class="table-dark">
-                <tr><th class="col-2">Linea</th><th>Texto</th><th>Error</th></tr>
-              </thead>
-              <tbody>
-                <tr th:each="error :${listaErrores}">
-                  <td th:text="${error.linea}"></td>
-                  <td th:text="${error.dato}"></td>
-                  <td th:text="${error.mensaje}"></td>
-                </tr>
-              </tbody>
-            </table>
+
+          <!-- Si el API devolvió job.id -->
+          <form th:if="${job != null and job['id'] != null}"
+                th:action="@{|/usuario/cargamasiva/procesar/${job['id']}|}" method="post" class="d-inline">
+            <input th:if="${_csrf != null}" type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+            <button type="submit" class="btn btn-success">
+              <i class="bi bi-gear-fill me-1"></i> Procesar
+            </button>
+          </form>
+
+          <!-- Si el API devolvió job.jobId -->
+          <form th:if="${job != null and job['id'] == null and job['jobId'] != null}"
+                th:action="@{|/usuario/cargamasiva/procesar/${job['jobId']}|}" method="post" class="d-inline">
+            <input th:if="${_csrf != null}" type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+            <button type="submit" class="btn btn-success">
+              <i class="bi bi-gear-fill me-1"></i> Procesar
+            </button>
+          </form>
+
+          <div class="small text-muted mt-2">
+            <b>Job ID:</b>
+            <span th:text="${job != null ? (job['id'] != null ? job['id'] : job['jobId']) : '-'}">-</span>
+            <span class="ms-3"><b>Estado:</b> <span th:text="${job != null ? job['status'] : '-'}">-</span></span>
+            <span class="ms-3" th:if="${job != null and job['observacion'] != null}">
+              <b>Obs.:</b> <span th:text="${job['observacion']}">-</span>
+            </span>
           </div>
         </div>
-        <!-- ===== Fin resultado ===== -->
+
+        <!-- Resultado del procesamiento -->
+        <div class="mt-4" th:if="${resultado != null}">
+          <div class="card border-0">
+            <div class="card-body">
+              <h5 class="card-title">Resultado del procesamiento</h5>
+
+              <div class="row">
+                <div class="col-md-6">
+                  <ul class="list-group mb-3">
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                      Estado
+                      <span class="badge bg-secondary" th:text="${resultado['status']}">-</span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center"
+                        th:if="${resultado['insertados'] != null}">
+                      Insertados
+                      <span class="badge bg-success" th:text="${resultado['insertados']}">0</span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center"
+                        th:if="${resultado['ignorados'] != null}">
+                      Ignorados
+                      <span class="badge bg-warning text-dark" th:text="${resultado['ignorados']}">0</span>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+
+              <!-- Errores de procesamiento -->
+              <div th:if="${listaErrores != null and !#lists.isEmpty(listaErrores)}">
+                <h6>Errores</h6>
+                <div class="table-responsive">
+                  <table class="table table-sm table-bordered align-middle">
+                    <thead class="table-light">
+                      <tr>
+                        <th>#</th>
+                        <th>Mensaje</th>
+                        <th>Fila</th>
+                        <th>Detalle</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr th:each="e, i : ${listaErrores}">
+                        <td th:text="${i.index + 1}">1</td>
+                        <td th:text="${e['mensaje'] != null ? e['mensaje'] : (e['error'] != null ? e['error'] : '-') }">-</td>
+                        <td th:text="${e['fila'] != null ? e['fila'] : (e['linea'] != null ? e['linea'] : '-') }">-</td>
+                        <td th:text="${e['detalle'] != null ? e['detalle'] : (e['campo'] != null ? e['campo'] : '-') }">-</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+              <div th:if="${archivoCorrecto == true}" class="alert alert-success mt-3">
+                ¡Procesado correctamente!
+              </div>
+              <div th:if="${resultado != null and resultado['observacion'] != null}"
+                   class="alert alert-info mt-3" th:text="${resultado['observacion']}"></div>
+            </div>
+          </div>
+        </div>
 
       </div>
     </div>
 
+    <!-- Pistas de formato -->
+    <p class="text-muted small mt-3">
+      Formato esperado (TXT “|” o XLSX): 0 Nombre | 1 ApellidoPaterno | 2 ApellidoMaterno | 3 Sexo(H/M) | 4 FechaNac(yyyy-MM-dd) | 5 UserName | 6 Email | 7 Password | 8 CURP | 9 Telefono | 10 Celular | 11 IdRol | 12 (ignorado) | 13 Calle | 14 NumInt | 15 NumExt | 16 IdColonia.
+    </p>
   </div>
 
   <!-- Bootstrap JS -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
 
   <script>
+    // ---- Lógica UI cliente (selección tipo de archivo, drag & drop, validaciones básicas) ----
     let tipoArchivo = ""; // "xlsx" | "txt"
     const $mostrarFormulario = document.getElementById("mostrarFormulario");
     const $botones = document.getElementById("botones");
@@ -136,12 +255,14 @@
     const $dropZone = document.getElementById("dropZone");
     const $form = document.getElementById("formCarga");
 
-    $mostrarFormulario.addEventListener("click", () => {
-      $mostrarFormulario.classList.add("d-none");
-      $botones.style.display = "block";
-    });
+    if ($mostrarFormulario) {
+      $mostrarFormulario.addEventListener("click", () => {
+        $mostrarFormulario.classList.add("d-none");
+        $botones.style.display = "block";
+      });
+    }
 
-    $btnExcel.addEventListener("click", () => {
+    if ($btnExcel) $btnExcel.addEventListener("click", () => {
       tipoArchivo = "xlsx";
       $formularioArchivo.style.display = "block";
       $archivo.setAttribute("accept", ".xlsx");
@@ -150,7 +271,7 @@
       ocultarAlertas(); resetFile();
     });
 
-    $btnTxt.addEventListener("click", () => {
+    if ($btnTxt) $btnTxt.addEventListener("click", () => {
       tipoArchivo = "txt";
       $formularioArchivo.style.display = "block";
       $archivo.setAttribute("accept", ".txt");
@@ -159,24 +280,30 @@
       ocultarAlertas(); resetFile();
     });
 
-    $archivo.addEventListener("change", function(){ if (!validarAntesDeElegir()) return; manejarArchivo(this.files[0]); });
+    if ($archivo) {
+      $archivo.addEventListener("change", function(){ if (!validarAntesDeElegir()) return; manejarArchivo(this.files[0]); });
+    }
 
-    ["dragenter","dragover"].forEach(evt =>
-      $dropZone.addEventListener(evt, e => { e.preventDefault(); e.stopPropagation(); $dropZone.classList.add("dragover"); })
-    );
-    ["dragleave","drop"].forEach(evt =>
-      $dropZone.addEventListener(evt, e => {
-        e.preventDefault(); e.stopPropagation();
-        if (evt === "drop") { if (!validarAntesDeElegir()) return; const file = e.dataTransfer.files?.[0]; if (file) manejarArchivo(file); }
-        $dropZone.classList.remove("dragover");
-      })
-    );
+    if ($dropZone) {
+      ["dragenter","dragover"].forEach(evt =>
+        $dropZone.addEventListener(evt, e => { e.preventDefault(); e.stopPropagation(); $dropZone.classList.add("dragover"); })
+      );
+      ["dragleave","drop"].forEach(evt =>
+        $dropZone.addEventListener(evt, e => {
+          e.preventDefault(); e.stopPropagation();
+          if (evt === "drop") { if (!validarAntesDeElegir()) return; const file = e.dataTransfer.files?.[0]; if (file) manejarArchivo(file); }
+          $dropZone.classList.remove("dragover");
+        })
+      );
+    }
 
-    $form.addEventListener("submit", (e) => {
-      if (!$archivo.files.length || !tipoArchivo) { e.preventDefault(); mostrarAlertaTipo(); }
-    });
+    if ($form) {
+      $form.addEventListener("submit", (e) => {
+        if (!$archivo.files.length || !tipoArchivo) { e.preventDefault(); mostrarAlertaTipo(); }
+      });
+    }
 
-    $btnLimpiar.addEventListener("click", resetTodo);
+    if ($btnLimpiar) $btnLimpiar.addEventListener("click", resetTodo);
 
     function validarAntesDeElegir(){ if (!tipoArchivo){ mostrarAlertaTipo(); return false; } ocultarAlertas(); return true; }
     function manejarArchivo(file){
@@ -191,7 +318,7 @@
     function mostrarAlertaExtension(){ $alertaTipo.classList.add("d-none"); $alertaExtension.classList.remove("d-none"); $cargaMasiva.disabled = true; }
     function ocultarAlertas(){ $alertaTipo.classList.add("d-none"); $alertaExtension.classList.add("d-none"); }
     function resetFile(){ $archivo.value = ""; $fileInfo.textContent = "Ningún archivo seleccionado"; $cargaMasiva.disabled = true; }
-    function resetTodo(){ tipoArchivo = ""; $mostrarFormulario.classList.remove("d-none"); $botones.style.display = "none"; $formularioArchivo.style.display = "none"; ocultarAlertas(); resetFile(); }
+    function resetTodo(){ tipoArchivo = ""; if ($mostrarFormulario) $mostrarFormulario.classList.remove("d-none"); if ($botones) $botones.style.display = "none"; if ($formularioArchivo) $formularioArchivo.style.display = "none"; ocultarAlertas(); resetFile(); }
   </script>
 </body>
 </html>
