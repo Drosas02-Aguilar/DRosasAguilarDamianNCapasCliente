@@ -65,6 +65,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.servlet.function.EntityResponse;
 
 import jakarta.validation.Valid;
+import java.text.Normalizer;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -94,42 +95,84 @@ public class UsuarioController {
 
     @Autowired
     private RestTemplate restTemplate;
+    // ========================= LISTADO + SEARCH (GET) =========================
 
-    // ========================= LISTADO =========================
-    @GetMapping
-    public String Index(Model model) {
-
+@GetMapping
+    public String Index(
+            Model model,
+            @RequestParam(required = false) String nombre,
+            @RequestParam(required = false, name = "apellidoPaterno") String apellidoPaterno,
+            @RequestParam(required = false, name = "apellidoMaterno") String apellidoMaterno,
+            @RequestParam(required = false) Integer idRol
+    ) {
+        // 1) Traer TODO del API de usuarios
         ResponseEntity<Result<List<Usuario>>> responseEntity = restTemplate.exchange(
                 "http://localhost:8080/usuarioapi",
                 HttpMethod.GET,
                 HttpEntity.EMPTY,
-                new ParameterizedTypeReference<Result<List<Usuario>>>() {
-        }
+                new ParameterizedTypeReference<Result<List<Usuario>>>() {}
         );
 
-        if (responseEntity.getStatusCode() == HttpStatusCode.valueOf(200)) {
-            Result<List<Usuario>> result = responseEntity.getBody();
-            model.addAttribute("usuarios", result != null && result.correct ? result.object : null);
-
-            // filtro
-            Usuario filtro = new Usuario("", "", "", new Rol());
-            filtro.getRol().setIdRol(0);
-            model.addAttribute("usuariobusqueda", filtro);
-
-            // roles
-            ResponseEntity<Result<List<Rol>>> rolesResponse = restTemplate.exchange(
-                    "http://localhost:8080/rolapi/getall",
-                    HttpMethod.GET,
-                    HttpEntity.EMPTY,
-                    new ParameterizedTypeReference<Result<List<Rol>>>() {
-            }
-            );
-            Result<List<Rol>> rolesRs = rolesResponse.getBody();
-            model.addAttribute("roles", rolesRs != null && rolesRs.correct ? rolesRs.object : java.util.Collections.emptyList());
+        List<Usuario> all = Collections.emptyList();
+        if (responseEntity.getStatusCode().is2xxSuccessful()
+                && responseEntity.getBody() != null
+                && responseEntity.getBody().correct
+                && responseEntity.getBody().object != null) {
+            all = responseEntity.getBody().object;
         }
+
+        // 2) Filtrar en memoria con Stream (nombre, apellidos, rol)
+        final int rolFiltro = (idRol == null) ? 0 : idRol;
+
+        List<Usuario> filtrados = all.stream()
+                .filter(u -> contains(u.getNombre(), nombre))
+                .filter(u -> contains(u.getApellidopaterno(), apellidoPaterno))
+                .filter(u -> contains(u.getApellidomaterno(), apellidoMaterno))
+                .filter(u -> rolFiltro == 0 || (u.getRol() != null && u.getRol().getIdRol() == rolFiltro))
+                .toList();
+
+        model.addAttribute("usuarios", filtrados);
+
+        // 3) Modelo de filtros para recordar valores en el formulario
+        Usuario filtro = new Usuario(
+                nullToEmpty(nombre),
+                nullToEmpty(apellidoPaterno),
+                nullToEmpty(apellidoMaterno),
+                new Rol()
+        );
+        filtro.getRol().setIdRol(rolFiltro);
+        model.addAttribute("usuariobusqueda", filtro);
+
+        // 4) Roles para el combo
+        ResponseEntity<Result<List<Rol>>> rolesResponse = restTemplate.exchange(
+                "http://localhost:8080/rolapi/getall",
+                HttpMethod.GET,
+                HttpEntity.EMPTY,
+                new ParameterizedTypeReference<Result<List<Rol>>>() {}
+        );
+        Result<List<Rol>> rolesRs = rolesResponse.getBody();
+        model.addAttribute("roles",
+                rolesRs != null && rolesRs.correct && rolesRs.object != null
+                        ? rolesRs.object
+                        : Collections.emptyList());
 
         return "UsuarioIndex";
     }
+
+    /* ===== Helpers de búsqueda ===== */
+    private static String nullToEmpty(String s) { return (s == null) ? "" : s; }
+    private static boolean contains(String campo, String criterio) {
+        if (criterio == null || criterio.isBlank()) return true;
+        return normalize(campo).contains(normalize(criterio));
+    }
+    private static String normalize(String s) {
+        if (s == null) return "";
+        String base = Normalizer.normalize(s, Normalizer.Form.NFD).replaceAll("\\p{M}+", "");
+        return base.toLowerCase(Locale.ROOT).trim();
+    }
+    
+
+    
 
     // ========================= ACTION (0 = ALTA | >0 = DETAIL) =========================
     @GetMapping("/action/{idUsuario}")

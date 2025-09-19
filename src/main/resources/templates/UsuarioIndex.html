@@ -22,28 +22,36 @@
     </div>
 
     <!-- Filtros (si no lo usas, puedes dejarlo) -->
-    <form method="post" th:action="@{/usuario}" th:object="${usuariobusqueda}" class="row g-2 mb-3">
-      <div class="col-sm-3">
-        <input class="form-control" placeholder="Nombre" th:field="*{Nombre}">
-      </div>
-      <div class="col-sm-3">
-        <input class="form-control" placeholder="Apellido paterno" th:field="*{Apellidopaterno}">
-      </div>
-      <div class="col-sm-3">
-        <input class="form-control" placeholder="Apellido materno" th:field="*{Apellidomaterno}">
-      </div>
-      <div class="col-sm-2">
-        <select class="form-select" th:field="*{rol.idRol}">
-          <option th:value="0">-- Rol (todos) --</option>
-          <option th:each="r : ${roles}" th:value="${r.idRol}" th:text="${r.nombre}"></option>
-        </select>
-      </div>
-      <div class="col-sm-1">
-        <button class="btn btn-primary w-100" type="submit">
-          <i class="bi bi-search"></i>
-        </button>
-      </div>
-    </form>
+    <form method="get" th:action="@{/usuario}" class="row g-2 mb-3">
+  <div class="col-sm-3">
+    <input class="form-control" placeholder="Nombre"
+           name="nombre"
+           th:value="${usuariobusqueda != null ? usuariobusqueda.nombre : ''}">
+  </div>
+  <div class="col-sm-3">
+    <input class="form-control" placeholder="Apellido paterno"
+           name="apellidoPaterno"
+           th:value="${usuariobusqueda != null ? usuariobusqueda.apellidopaterno : ''}">
+  </div>
+  <div class="col-sm-3">
+    <input class="form-control" placeholder="Apellido materno"
+           name="apellidoMaterno"
+           th:value="${usuariobusqueda != null ? usuariobusqueda.apellidomaterno : ''}">
+  </div>
+  <div class="col-sm-2">
+    <select class="form-select" name="idRol"
+            th:value="${usuariobusqueda != null && usuariobusqueda.rol != null ? usuariobusqueda.rol.idRol : 0}">
+      <option value="0">-- Rol (todos) --</option>
+      <option th:each="r : ${roles}" th:value="${r.idRol}" th:text="${r.nombre}"></option>
+    </select>
+  </div>
+  <div class="col-sm-1">
+    <button class="btn btn-primary w-100" type="submit">
+      <i class="bi bi-search"></i>
+    </button>
+  </div>
+</form>
+
 
     <!-- Mensaje flash (opcional) -->
     <div th:if="${msg}" class="alert alert-success alert-dismissible fade show" role="alert">
