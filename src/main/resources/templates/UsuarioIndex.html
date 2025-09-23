@@ -220,7 +220,7 @@
                     $input.prop('disabled', true);
 
                     $.ajax({
-                        url: `http://localhost:8080/usuarioapi/setActivo/${id}`, // <-- nota la "/" después de 8080
+                        url: `http://localhost:8080/usuariorepositoy/setActivo/${id}`, // <-- nota la "/" después de 8080
                         type: 'PATCH',
                         data: {activo: intentoActivo, usuarioBaja: 'admin'},
                         beforeSend: function (xhr) {
@@ -277,7 +277,7 @@
                     $btn.prop('disabled', true);
 
                     $.ajax({
-                        url: `http://localhost:8080/usuarioapi/delete/${id}`,
+                        url: `http://localhost:8080/usuariorepositoy/delete/${id}`,
                         type: 'DELETE',
                         beforeSend: function (xhr) {
                             xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');

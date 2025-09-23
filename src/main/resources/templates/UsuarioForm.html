@@ -678,7 +678,7 @@ $(document).ready(function(){
 
     $.ajax({
       type: "GET",
-      url: `http://localhost:8080/catalogoapi/estados/${idPais}`,
+      url: `http://localhost:8080/catalogorepositoy/estados/${idPais}`,
       dataType: "json",
       success: function(data){
         if (data && data.correct) {
@@ -700,7 +700,7 @@ $(document).ready(function(){
 
     $.ajax({
       type: "GET",
-      url: `http://localhost:8080/catalogoapi/municipios/${idEstado}`,
+      url: `http://localhost:8080/catalogorepositoy/municipios/${idEstado}`,
       dataType: "json",
       success: function(data){
         if (data && data.correct) {
@@ -726,7 +726,7 @@ $(document).ready(function(){
 
     $.ajax({
       type: "GET",
-      url: `http://localhost:8080/catalogoapi/colonias/${idMunicipio}`,
+      url: `http://localhost:8080/catalogorepositoy/colonias/${idMunicipio}`,
       dataType: "json",
       success: function(data){
         if (data && data.correct) {

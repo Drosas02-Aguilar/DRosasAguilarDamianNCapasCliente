@@ -107,7 +107,7 @@ public class UsuarioController {
     ) {
         // 1) Traer TODO del API de usuarios
         ResponseEntity<Result<List<Usuario>>> responseEntity = restTemplate.exchange(
-                "http://localhost:8080/usuarioapi",
+                "http://localhost:8080/usuariorepositoy",
                 HttpMethod.GET,
                 HttpEntity.EMPTY,
                 new ParameterizedTypeReference<Result<List<Usuario>>>() {}
@@ -121,7 +121,7 @@ public class UsuarioController {
             all = responseEntity.getBody().object;
         }
 
-        // 2) Filtrar en memoria con Stream (nombre, apellidos, rol)
+        // 2) Filtrar (nombre, apellidos, rol)
         final int rolFiltro = (idRol == null) ? 0 : idRol;
 
         List<Usuario> filtrados = all.stream()
@@ -143,9 +143,9 @@ public class UsuarioController {
         filtro.getRol().setIdRol(rolFiltro);
         model.addAttribute("usuariobusqueda", filtro);
 
-        // 4) Roles para el combo
+        // 4) Roles
         ResponseEntity<Result<List<Rol>>> rolesResponse = restTemplate.exchange(
-                "http://localhost:8080/rolapi/getall",
+                "http://localhost:8080/rolrepositoy/getall",
                 HttpMethod.GET,
                 HttpEntity.EMPTY,
                 new ParameterizedTypeReference<Result<List<Rol>>>() {}
@@ -201,14 +201,14 @@ public class UsuarioController {
 
             // Roles y Países
             ResponseEntity<Result<List<Rol>>> rolesResponse = restTemplate.exchange(
-                    "http://localhost:8080/rolapi/getall",
+                    "http://localhost:8080/rolrepositoy/getall",
                     HttpMethod.GET,
                     HttpEntity.EMPTY,
                     new ParameterizedTypeReference<Result<List<Rol>>>() {
             }
             );
             ResponseEntity<Result<List<Pais>>> paisesResponse = restTemplate.exchange(
-                    "http://localhost:8080/catalogoapi/paises",
+                    "http://localhost:8080/catalogorepositoy/paises",
                     HttpMethod.GET,
                     HttpEntity.EMPTY,
                     new ParameterizedTypeReference<Result<List<Pais>>>() {
@@ -235,7 +235,7 @@ public class UsuarioController {
         } else {
             // Detail (EditarUsuario)
             ResponseEntity<Result<Usuario>> usuarioResp = restTemplate.exchange(
-                    "http://localhost:8080/usuarioapi/direcciones/{id}",
+                    "http://localhost:8080/usuariorepositoy/direcciones/{id}",
                     HttpMethod.GET,
                     HttpEntity.EMPTY,
                     new ParameterizedTypeReference<Result<Usuario>>() {
@@ -263,7 +263,7 @@ public class UsuarioController {
         if (did == -1) {
             // Editar información de usuario (sin dirección)
             ResponseEntity<Result<Usuario>> usuarioResp = restTemplate.exchange(
-                    "http://localhost:8080/usuarioapi/get/{id}",
+                    "http://localhost:8080/usuariorepositoy/get/{id}",
                     HttpMethod.GET,
                     HttpEntity.EMPTY,
                     new ParameterizedTypeReference<Result<Usuario>>() {
@@ -285,7 +285,7 @@ public class UsuarioController {
             u.setDirecciones(list);
 
             ResponseEntity<Result<List<Rol>>> rolesResponse = restTemplate.exchange(
-                    "http://localhost:8080/rolapi/getall",
+                    "http://localhost:8080/rolrepositoy/getall",
                     HttpMethod.GET,
                     HttpEntity.EMPTY,
                     new ParameterizedTypeReference<Result<List<Rol>>>() {
@@ -322,7 +322,7 @@ public class UsuarioController {
             u.setDirecciones(list);
 
             ResponseEntity<Result<List<Pais>>> paisesResponse = restTemplate.exchange(
-                    "http://localhost:8080/catalogoapi/paises",
+                    "http://localhost:8080/catalogorepositoy/paises",
                     HttpMethod.GET,
                     HttpEntity.EMPTY,
                     new ParameterizedTypeReference<Result<List<Pais>>>() {
@@ -342,7 +342,7 @@ public class UsuarioController {
         } else {
             // Editar dirección existente (did > 0)
             ResponseEntity<Result<Direccion>> dirResp = restTemplate.exchange(
-                    "http://localhost:8080/direccionapi/get/{idDireccion}",
+                    "http://localhost:8080/direccionrepositoy/get/{idDireccion}",
                     HttpMethod.GET,
                     HttpEntity.EMPTY,
                     new ParameterizedTypeReference<Result<Direccion>>() {
@@ -363,7 +363,7 @@ public class UsuarioController {
             u.setDirecciones(list);
 
             ResponseEntity<Result<List<Pais>>> paisesResponse = restTemplate.exchange(
-                    "http://localhost:8080/catalogoapi/paises",
+                    "http://localhost:8080/catalogorepositoy/paises",
                     HttpMethod.GET,
                     HttpEntity.EMPTY,
                     new ParameterizedTypeReference<Result<List<Pais>>>() {
@@ -389,7 +389,6 @@ public class UsuarioController {
             Model model,
             @RequestParam(name = "userFotoInput", required = false) MultipartFile imagen) {
 
-        // Sentinel seguro (NO comparar con null: getIdDireccion() es int)
         int idUsuario = usuario.getIdUsuario();
         int idDireccion = 0;
         if (usuario.getDirecciones() != null
@@ -404,14 +403,14 @@ public class UsuarioController {
             if (bindingResult.hasErrors()) {
                 // recargar roles y paises
                 ResponseEntity<Result<List<Rol>>> rolesResponse = restTemplate.exchange(
-                        "http://localhost:8080/rolapi/getall",
+                        "http://localhost:8080/rolrepositoy/getall",
                         HttpMethod.GET,
                         HttpEntity.EMPTY,
                         new ParameterizedTypeReference<Result<List<Rol>>>() {
                 }
                 );
                 ResponseEntity<Result<List<Pais>>> paisesResponse = restTemplate.exchange(
-                        "http://localhost:8080/catalogoapi/paises",
+                        "http://localhost:8080/catalogorepositoy/paises",
                         HttpMethod.GET,
                         HttpEntity.EMPTY,
                         new ParameterizedTypeReference<Result<List<Pais>>>() {
@@ -454,7 +453,7 @@ public class UsuarioController {
             HttpEntity<Usuario> entity = new HttpEntity<>(usuario, headers);
 
             ResponseEntity<Result<Usuario>> addResp = restTemplate.exchange(
-                    "http://localhost:8080/usuarioapi/agregar",
+                    "http://localhost:8080/usuariorepositoy/agregar",
                     HttpMethod.POST,
                     entity,
                     new ParameterizedTypeReference<Result<Usuario>>() {
@@ -470,7 +469,7 @@ public class UsuarioController {
 
             if (bindingResult.hasErrors()) {
                 ResponseEntity<Result<List<Rol>>> rolesResponse = restTemplate.exchange(
-                        "http://localhost:8080/rolapi/getall",
+                        "http://localhost:8080/rolrepositoy/getall",
                         HttpMethod.GET,
                         HttpEntity.EMPTY,
                         new ParameterizedTypeReference<Result<List<Rol>>>() {
@@ -505,7 +504,7 @@ public class UsuarioController {
             HttpEntity<Usuario> entity = new HttpEntity<>(usuario, headers);
 
             ResponseEntity<Result<Usuario>> updResp = restTemplate.exchange(
-                    "http://localhost:8080/usuarioapi/update/{id}",
+                    "http://localhost:8080/usuariorepositoy/update/{id}",
                     HttpMethod.PUT,
                     entity,
                     new ParameterizedTypeReference<Result<Usuario>>() {
@@ -533,7 +532,7 @@ public class UsuarioController {
             HttpEntity<Direccion> entity = new HttpEntity<>(d, headers);
 
             ResponseEntity<Result<Direccion>> addDirResp = restTemplate.exchange(
-                    "http://localhost:8080/direccionapi/usuario/{idUsuario}/agregar",
+                    "http://localhost:8080/direccionrepositoy/usuario/{idUsuario}/agregar",
                     HttpMethod.POST,
                     entity,
                     new ParameterizedTypeReference<Result<Direccion>>() {
@@ -560,7 +559,7 @@ public class UsuarioController {
             HttpEntity<Direccion> entity = new HttpEntity<>(d, headers);
 
             ResponseEntity<Result<Direccion>> updDirResp = restTemplate.exchange(
-                    "http://localhost:8080/direccionapi/update/{idDireccion}",
+                    "http://localhost:8080/direccionrepositoy/update/{idDireccion}",
                     HttpMethod.PUT,
                     entity,
                     new ParameterizedTypeReference<Result<Direccion>>() {
@@ -574,11 +573,11 @@ public class UsuarioController {
         return "redirect:/usuario";
     }
 
-    // ========================= ELIMINAR DIRECCIÓN (se mantiene igual) =========================
+    // ========================= ELIMINAR DIRECCIÓN  =========================
     @GetMapping("direccion/delete")
     public String DireccionDelete(@RequestParam int idDireccion, @RequestParam int idUsuario) {
         ResponseEntity<Result<Direccion>> deleteResponse = restTemplate.exchange(
-                "http://localhost:8080/direccionapi/delete/{idDireccion}",
+                "http://localhost:8080/direccionrepositoy/delete/{idDireccion}",
                 HttpMethod.DELETE,
                 HttpEntity.EMPTY,
                 new ParameterizedTypeReference<Result<Direccion>>() {
