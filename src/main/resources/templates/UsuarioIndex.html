@@ -3,115 +3,116 @@
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layout}">
 
-<body layout:fragment="body">
+    <body layout:fragment="body">
 
-<div class="container">
+        <div class="container">
 
-  <div class="container py-4">
-    <!-- Hero -->
-    <div class="hero mb-4 d-flex align-items-center justify-content-between gap-3">
-      <div>
-        <h1 class="h4 mb-1"><i class="bi bi-people-fill me-2"></i>Usuarios</h1>
-        <p class="mb-0 opacity-75">Listado general de usuarios registrados.</p>
-      </div>
-      <div class="text-end">
-        <a th:href="@{/usuario/action/0}" class="btn btn-gradient btn-sm">
-          <i class="bi bi-person-plus me-1"></i> Registrar usuario
-        </a>
-      </div>
-    </div>
-
-    <!-- Filtros (si no lo usas, puedes dejarlo) -->
-    <form method="get" th:action="@{/usuario}" class="row g-2 mb-3">
-  <div class="col-sm-3">
-    <input class="form-control" placeholder="Nombre"
-           name="nombre"
-           th:value="${usuariobusqueda != null ? usuariobusqueda.nombre : ''}">
-  </div>
-  <div class="col-sm-3">
-    <input class="form-control" placeholder="Apellido paterno"
-           name="apellidoPaterno"
-           th:value="${usuariobusqueda != null ? usuariobusqueda.apellidopaterno : ''}">
-  </div>
-  <div class="col-sm-3">
-    <input class="form-control" placeholder="Apellido materno"
-           name="apellidoMaterno"
-           th:value="${usuariobusqueda != null ? usuariobusqueda.apellidomaterno : ''}">
-  </div>
-  <div class="col-sm-2">
-    <select class="form-select" name="idRol"
-            th:value="${usuariobusqueda != null && usuariobusqueda.rol != null ? usuariobusqueda.rol.idRol : 0}">
-      <option value="0">-- Rol (todos) --</option>
-      <option th:each="r : ${roles}" th:value="${r.idRol}" th:text="${r.nombre}"></option>
-    </select>
-  </div>
-  <div class="col-sm-1">
-    <button class="btn btn-primary w-100" type="submit">
-      <i class="bi bi-search"></i>
-    </button>
-  </div>
-</form>
-
-
-    <!-- Mensaje flash (opcional) -->
-    <div th:if="${msg}" class="alert alert-success alert-dismissible fade show" role="alert">
-      <span th:text="${msg}">Operación realizada</span>
-      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-    </div>
-
-    <!-- Tabla -->
-    <div class="card">
-      <div class="table-responsive">
-        <table class="table align-middle table-hover mb-0">
-          <thead class="table-light text-center">
-          <tr>
-            <th>Acciones</th>
-            <th>Usuario</th>
-            <th>Datos de contacto</th>
-            <th>Direcciones</th>
-            <th>Estatus</th>
-          </tr>
-          </thead>
-          <tbody class="text-center">
-          <tr th:each="usuario : ${usuarios}">
-            <!-- Acciones -->
-            <td class="text-nowrap">
-              <!-- Detalle/editar con sentinelas -->
-              <a th:href="@{/usuario/action/{id}(id=${usuario.idUsuario})}"
-                 class="btn btn-sm btn-warning me-1">
-                <i class="bi bi-pencil-square"></i>
-              </a>
-              <a href="#"
-                 class="btn btn-sm btn-danger js-user-delete"
-                 th:attr="data-id=${usuario.idUsuario}">
-                <i class="bi bi-trash"></i>
-              </a>
-            </td>
-
-            <!-- Usuario -->
-            <td class="text-start">
-              <div class="d-flex align-items-center gap-2">
-                <!-- Si tiene imagen -->
-                <img th:if="${usuario.imagen != null}"
-                     th:src="|data:image/jpeg;base64,${usuario.imagen}|"
-                     alt="Avatar usuario"
-                     class="avatar"
-                     style="object-fit: cover;"/>
-
-                <!-- Si no tiene imagen -->
-                <div th:unless="${usuario.imagen != null}" class="avatar">
-                  <span th:text="${(usuario.nombre != null ? usuario.nombre.substring(0,1) : 'U').toUpperCase()}">U</span>
+            <div class="container py-4">
+                <!-- Hero -->
+                <div class="hero mb-4 d-flex align-items-center justify-content-between gap-3">
+                    <div>
+                        <h1 class="h4 mb-1"><i class="bi bi-people-fill me-2"></i>Usuarios</h1>
+                        <p class="mb-0 opacity-75">Listado general de usuarios registrados.</p>
+                    </div>
+                    <div class="text-end" th:if="${isAdmin}">
+  <a th:href="@{/usuario/action/0}" class="btn btn-gradient btn-sm">
+    <i class="bi bi-person-plus me-1"></i> Registrar usuario
+  </a>
+</div>
+                    <form th:action="@{/usuario/logout}" method="post" class="d-inline">
+                        <button class="btn btn-outline-secondary" type="submit">Cerrar sesión</button>
+                    </form>
                 </div>
 
-                <div>
-                  <div class="fw-semibold" th:text="|${usuario.nombre} ${usuario.apellidopaterno} ${usuario.apellidomaterno}|">
-                    Nombre Apellidos
-                  </div>
-                  <div class="text-muted small">
-                    <i class="bi bi-person-badge me-1"></i>
-                    <span th:text="${usuario.username} ?: 'Sin usuario'">Sin usuario</span>
-                  </div>
-                  <div class="mt-1">
+                <!-- Filtros (si no lo usas, puedes dejarlo) -->
+                <form method="get" th:action="@{/usuario}" class="row g-2 mb-3">
+                    <div class="col-sm-3">
+                        <input class="form-control" placeholder="Nombre"
+                               name="nombre"
+                               th:value="${usuariobusqueda != null ? usuariobusqueda.nombre : ''}">
+                    </div>
+                    <div class="col-sm-3">
+                        <input class="form-control" placeholder="Apellido paterno"
+                               name="apellidoPaterno"
+                               th:value="${usuariobusqueda != null ? usuariobusqueda.apellidopaterno : ''}">
+                    </div>
+                    <div class="col-sm-3">
+                        <input class="form-control" placeholder="Apellido materno"
+                               name="apellidoMaterno"
+                               th:value="${usuariobusqueda != null ? usuariobusqueda.apellidomaterno : ''}">
+                    </div>
+                    <div class="col-sm-2">
+                        <select class="form-select" name="idRol"
+                                th:value="${usuariobusqueda != null && usuariobusqueda.rol != null ? usuariobusqueda.rol.idRol : 0}">
+                            <option value="0">-- Rol (todos) --</option>
+                            <option th:each="r : ${roles}" th:value="${r.idRol}" th:text="${r.nombre}"></option>
+                        </select>
+                    </div>
+                    <div class="col-sm-1">
+                        <button class="btn btn-primary w-100" type="submit">
+                            <i class="bi bi-search"></i>
+                        </button>
+                    </div>
+                </form>
+
+
+                <!-- Mensaje flash (opcional) -->
+                <div th:if="${msg}" class="alert alert-success alert-dismissible fade show" role="alert">
+                    <span th:text="${msg}">Operación realizada</span>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+
+                <!-- Tabla -->
+                <div class="card">
+                    <div class="table-responsive">
+                        <table class="table align-middle table-hover mb-0">
+                            <thead class="table-light text-center">
+                                <tr>
+                                    <th>Acciones</th>
+                                    <th>Usuario</th>
+                                    <th>Datos de contacto</th>
+                                    <th>Direcciones</th>
+                                    <th>Estatus</th>
+                                </tr>
+                            </thead>
+                            <tbody class="text-center">
+                                <tr th:each="usuario : ${usuarios}">
+                                    <!-- Acciones -->
+                                    <td class="text-nowrap">
+                                        <a th:if="${isAdmin}" th:href="@{/usuario/action/{id}(id=${usuario.idUsuario})}"
+                                           class="btn btn-sm btn-warning me-1">
+                                            <i class="bi bi-pencil-square"></i>
+                                        </a>
+                                        <a th:if="${isAdmin}" href="#" class="btn btn-sm btn-danger js-user-delete"
+                                           th:attr="data-id=${usuario.idUsuario}">
+                                            <i class="bi bi-trash"></i>
+                                        </a>
+                                    </td>
+
+                                    <!-- Usuario -->
+                                    <td class="text-start">
+                                        <div class="d-flex align-items-center gap-2">
+                                            <!-- Si tiene imagen -->
+                                            <img th:if="${usuario.imagen != null}"
+                                                 th:src="|data:image/jpeg;base64,${usuario.imagen}|"
+                                                 alt="Avatar usuario"
+                                                 class="avatar"
+                                                 style="object-fit: cover;"/>
+
+                                            <!-- Si no tiene imagen -->
+                                            <div th:unless="${usuario.imagen != null}" class="avatar">
+                                                <span th:text="${(usuario.nombre != null ? usuario.nombre.substring(0,1) : 'U').toUpperCase()}">U</span>
+                                            </div>
+
+                                            <div>
+                                                <div class="fw-semibold" th:text="|${usuario.nombre} ${usuario.apellidopaterno} ${usuario.apellidomaterno}|">
+                                                    Nombre Apellidos
+                                                </div>
+                                                <div class="text-muted small">
+                                                    <i class="bi bi-person-badge me-1"></i>
+                                                    <span th:text="${usuario.username} ?: 'Sin usuario'">Sin usuario</span>
+                                                </div>
+                                                <div class="mt-1">
                                                     <span class="badge"
                                                           th:classappend="${#strings.equalsIgnoreCase(#strings.trim(usuario.sexo),'M')} ? 'bg-primary' 
                                                           : (${#strings.equalsIgnoreCase(#strings.trim(usuario.sexo),'F')} ? 'bg-danger' : 'text-bg-secondary')"
@@ -119,196 +120,215 @@
                                                           : (${#strings.equalsIgnoreCase(#strings.trim(usuario.sexo),'F')} ? 'Femenino' : 'Sin dato')">
                                                         Sin dato
                                                     </span>
-                    <span class="badge text-bg-light ms-1">
+                                                    <span class="badge text-bg-light ms-1">
                                                         <i class="bi bi-cake2 me-1"></i>
                                                         <span th:text="${usuario.fechaNacimiento != null ? #dates.format(usuario.fechaNacimiento,'dd/MM/yyyy') : 'Sin fecha'}">Sin fecha</span>
                                                     </span>
-                  </div>
-                </div>
-              </div>
-            </td>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
 
-            <!-- Contacto -->
-            <td class="text-start">
-              <div><i class="bi bi-envelope me-1 text-muted"></i>
-                <span th:text="${usuario.email} ?: 'Sin email'">Sin email</span>
-              </div>
-              <div><i class="bi bi-telephone me-1 text-muted"></i>
-                <span th:text="${usuario.telefono} ?: 'Sin teléfono'">Sin teléfono</span>
-              </div>
-              <div><i class="bi bi-phone me-1 text-muted"></i>
-                <span th:text="${usuario.celular} ?: 'Sin celular'">Sin celular</span>
-              </div>
-              <div class="mt-1"><i class="bi bi-upc me-1 text-muted"></i>
-                <span class="text-uppercase" th:text="${usuario.curp} ?: 'Sin CURP'">Sin CURP</span>
-              </div>
-              <div class="mt-1">
-<!--                                            <span class="badge text-bg-secondary">
-                                                <i class="bi bi-droplet-half me-1"></i>
-                                                <span th:text="${usuario.tiposangre} ?: 'Sin tipo'">Sin tipo</span>
-                                            </span>-->
-              </div>
-            </td>
+                                    <!-- Contacto -->
+                                    <td class="text-start">
+                                        <div><i class="bi bi-envelope me-1 text-muted"></i>
+                                            <span th:text="${usuario.email} ?: 'Sin email'">Sin email</span>
+                                        </div>
+                                        <div><i class="bi bi-telephone me-1 text-muted"></i>
+                                            <span th:text="${usuario.telefono} ?: 'Sin teléfono'">Sin teléfono</span>
+                                        </div>
+                                        <div><i class="bi bi-phone me-1 text-muted"></i>
+                                            <span th:text="${usuario.celular} ?: 'Sin celular'">Sin celular</span>
+                                        </div>
+                                        <div class="mt-1"><i class="bi bi-upc me-1 text-muted"></i>
+                                            <span class="text-uppercase" th:text="${usuario.curp} ?: 'Sin CURP'">Sin CURP</span>
+                                        </div>
+                                        <div class="mt-1">
+                                            <!--                                            <span class="badge text-bg-secondary">
+                                                                                            <i class="bi bi-droplet-half me-1"></i>
+                                                                                            <span th:text="${usuario.tiposangre} ?: 'Sin tipo'">Sin tipo</span>
+                                                                                        </span>-->
+                                        </div>
+                                    </td>
 
-            <!-- Direcciones -->
-            <td class="text-start">
-              <div th:if="${usuario.direcciones != null and !#lists.isEmpty(usuario.direcciones)}">
-                <ul class="list-unstyled mb-0">
-                  <li th:each="direccion, iterStat : ${usuario.direcciones}" class="mb-2">
-                    <span class="fw-bold">[[${iterStat.index + 1}]].</span>
-                    <span th:text="${direccion.Calle}">Calle</span>
-                    <span th:if="${direccion.NumeroExterior != null}" th:text="' #'+${direccion.NumeroExterior}"></span>
-                    <span th:if="${direccion.NumeroInterior != null}" th:text="' Int. '+${direccion.NumeroInterior}"></span>
-                    <span th:if="${direccion.Colonia != null}" th:text="', '+${direccion.Colonia.Nombre}"></span>
-                    <span th:if="${direccion.Colonia != null}" th:text="' CP '+${direccion.Colonia.CodigoPostal}"></span>
-                    <span th:if="${direccion.Colonia != null and direccion.Colonia.Municipio != null}" th:text="', '+${direccion.Colonia.Municipio.Nombre}"></span>
-                    <span th:if="${direccion.Colonia != null and direccion.Colonia.Municipio != null and direccion.Colonia.Municipio.Estado != null}" th:text="', '+${direccion.Colonia.Municipio.Estado.Nombre}"></span>
-                    <span th:if="${direccion.Colonia != null and direccion.Colonia.Municipio != null and direccion.Colonia.Municipio.Estado != null and direccion.Colonia.Municipio.Estado.Pais != null}" th:text="', '+${direccion.Colonia.Municipio.Estado.Pais.Nombre}"></span>
-                  </li>
-                </ul>
-              </div>
-              <div th:if="${usuario.direcciones == null or #lists.isEmpty(usuario.direcciones)}">
-                <span class="text-danger">No tiene dirección</span>
-              </div>
-            </td>
-            <td class="text-center">
-              <div class="form-check form-switch d-inline-flex align-items-center gap-2">
-                <input class="form-check-input js-status-toggle"
-                       type="checkbox" role="switch"
-                       th:data-id="${usuario.idUsuario}"
-                       th:checked="${usuario.status == 1}">
-                <span class="badge"
-                      th:text="${usuario.status == 1 ? 'Activo' : 'Inactivo'}"
-                      th:classappend="${usuario.status == 1 ? ' bg-success' : ' bg-secondary'}">Activo</span>
-              </div>
-            </td>
-          </tr>
-
-          <!-- Empty state -->
-          <tr th:if="${usuarios == null or #lists.isEmpty(usuarios)}">
-            <td colspan="4" class="text-center py-5">
-              <i class="bi bi-inboxes display-6 text-muted d-block mb-2"></i>
-              <div class="text-muted">No hay usuarios registrados</div>
-              <a th:href="@{/usuario/action/0}" class="btn btn-gradient btn-sm mt-3">
-                <i class="bi bi-person-plus me-1"></i> Registrar usuario
-              </a>
-            </td>
-          </tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-
+                                    <!-- Direcciones -->
+                                    <td class="text-start">
+                                        <div th:if="${usuario.direcciones != null and !#lists.isEmpty(usuario.direcciones)}">
+                                            <ul class="list-unstyled mb-0">
+                                                <li th:each="direccion, iterStat : ${usuario.direcciones}" class="mb-2">
+                                                    <span class="fw-bold">[[${iterStat.index + 1}]].</span>
+                                                    <span th:text="${direccion.Calle}">Calle</span>
+                                                    <span th:if="${direccion.NumeroExterior != null}" th:text="' #'+${direccion.NumeroExterior}"></span>
+                                                    <span th:if="${direccion.NumeroInterior != null}" th:text="' Int. '+${direccion.NumeroInterior}"></span>
+                                                    <span th:if="${direccion.Colonia != null}" th:text="', '+${direccion.Colonia.Nombre}"></span>
+                                                    <span th:if="${direccion.Colonia != null}" th:text="' CP '+${direccion.Colonia.CodigoPostal}"></span>
+                                                    <span th:if="${direccion.Colonia != null and direccion.Colonia.Municipio != null}" th:text="', '+${direccion.Colonia.Municipio.Nombre}"></span>
+                                                    <span th:if="${direccion.Colonia != null and direccion.Colonia.Municipio != null and direccion.Colonia.Municipio.Estado != null}" th:text="', '+${direccion.Colonia.Municipio.Estado.Nombre}"></span>
+                                                    <span th:if="${direccion.Colonia != null and direccion.Colonia.Municipio != null and direccion.Colonia.Municipio.Estado != null and direccion.Colonia.Municipio.Estado.Pais != null}" th:text="', '+${direccion.Colonia.Municipio.Estado.Pais.Nombre}"></span>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                        <div th:if="${usuario.direcciones == null or #lists.isEmpty(usuario.direcciones)}">
+                                            <span class="text-danger">No tiene dirección</span>
+                                        </div>
+                                    </td>
+                                    <td class="text-center">
+  <div th:if="${isAdmin}" class="form-check form-switch d-inline-flex align-items-center gap-2">
+    <input class="form-check-input js-status-toggle" type="checkbox" role="switch"
+           th:data-id="${usuario.idUsuario}" th:checked="${usuario.status == 1}">
+    <span class="badge"
+          th:text="${usuario.status == 1 ? 'Activo' : 'Inactivo'}"
+          th:classappend="${usuario.status == 1 ? ' bg-success' : ' bg-secondary'}">Activo</span>
   </div>
+  <div th:unless="${isAdmin}">
+    <span class="badge"
+          th:text="${usuario.status == 1 ? 'Activo' : 'Inactivo'}"
+          th:classappend="${usuario.status == 1 ? ' bg-success' : ' bg-secondary'}">Activo</span>
+  </div>
+</td>
+                                </tr>
+
+                                <!-- Empty state -->
+                                <tr th:if="${usuarios == null or #lists.isEmpty(usuarios)}">
+                                    <td colspan="4" class="text-center py-5">
+                                        <i class="bi bi-inboxes display-6 text-muted d-block mb-2"></i>
+                                        <div class="text-muted">No hay usuarios registrados</div>
+                                        <a th:href="@{/usuario/action/0}" class="btn btn-gradient btn-sm mt-3">
+                                            <i class="bi bi-person-plus me-1"></i> Registrar usuario
+                                        </a>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
 
             <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
-
+            <script src="https://code.jquery.com/jquery-3.7.1.min.js" crossorigin="anonymous"></script>
             <script>
+(function(){
+  const API = 'http://localhost:8080';
+  const jwt = document.querySelector('meta[name="jwt"]')?.content || '';
 
-                $(document).on('change', '.js-status-toggle', function () {
-                    const $input = $(this);
-                    const id = $input.data('id');
-                    const intentoActivo = $input.is(':checked');
+  // Auth + headers para TODAS las peticiones jQuery
+  $.ajaxSetup({
+    beforeSend: function(xhr){
+      xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+      if (jwt) xhr.setRequestHeader('Authorization', 'Bearer ' + jwt);
+      xhr.setRequestHeader('Accept', 'application/json');
+    },
+    cache: false,
+    xhrFields: { withCredentials: false }
+  });
 
-                    const $cell = $input.closest('.form-switch');
-                    const $badge = $cell.find('.badge').first();
-                    const $row = $input.closest('tr');
+  // Manejo global de errores
+  function onAjaxFail(xhr){
+    if (xhr && xhr.status === 401) {
+      window.location = '/usuario/login?error=Sesion%20caducada';
+    } else if (xhr && xhr.status === 403) {
+      window.location = '/usuario/403';
+    } else {
+      alert('Error: ' + (xhr?.responseText || xhr?.statusText || 'Desconocido'));
+    }
+  }
+  $(document).ajaxError(function(_ev, xhr){ onAjaxFail(xhr); });
 
-                    const token = $('meta[name="_csrf"]').attr('content');
-                    const header = $('meta[name="_csrf_header"]').attr('content');
+  // === Toggle estatus (con revert si falla) ===
+  $(document).on('change', '.js-status-toggle', function () {
+    const $input = $(this);
+    const id = $input.data('id');
+    const intentoActivo = $input.is(':checked');
+    const prev = !intentoActivo; // estado anterior para revertir si falla
 
-                    $input.prop('disabled', true);
+    const $cell = $input.closest('.form-switch');
+    const $badge = $cell.find('.badge').first();
+    const $row  = $input.closest('tr');
 
-                    $.ajax({
-                        url: `http://localhost:8080/usuariorepositoy/setActivo/${id}`, // <-- nota la "/" después de 8080
-                        type: 'PATCH',
-                        data: {activo: intentoActivo, usuarioBaja: 'admin'},
-                        beforeSend: function (xhr) {
-                            xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
-                            if (token && header)
-                                xhr.setRequestHeader(header, token);
-                        }
-                    })
+    $input.prop('disabled', true);
 
-                            .done(function (r) {
+    $.ajax({
+      url: `${API}/usuariorepositoy/setActivo/${id}`,
+      type: 'PATCH',
+      dataType: 'json',
+      data: { activo: intentoActivo, usuarioBaja: '' } // el server puede inferir usuario
+    })
+    .done(function (r, _text, xhr) {
+      const ok = (xhr.status === 204) || (r && r.correct === true);
+      if (!ok) {
+        // Revertir UI si backend respondió "error"
+        $input.prop('checked', prev);
+        if ($badge.length) {
+          $badge.text(prev ? 'Activo' : 'Inactivo')
+                .toggleClass('bg-success', prev)
+                .toggleClass('bg-secondary', !prev);
+        }
+        if ($row.length) $row.toggleClass('table-secondary', !prev);
+        alert((r && r.errorMessage) || 'No se pudo actualizar');
+        return;
+      }
 
-                                if (!r || r.correct !== true) {
-                                    throw new Error((r && r.errorMessage) || 'No se pudo actualizar');
-                                }
+      // Éxito: reflejar estado final
+      $input.prop('checked', intentoActivo);
+      if ($badge.length) {
+        $badge.text(intentoActivo ? 'Activo' : 'Inactivo')
+              .toggleClass('bg-success', intentoActivo)
+              .toggleClass('bg-secondary', !intentoActivo);
+      }
+      if ($row.length) $row.toggleClass('table-secondary', !intentoActivo);
+    })
+    .fail(function(xhr){
+      // Revertir UI si hay fallo de red / 4xx / 5xx
+      $input.prop('checked', prev);
+      if ($badge.length) {
+        $badge.text(prev ? 'Activo' : 'Inactivo')
+              .toggleClass('bg-success', prev)
+              .toggleClass('bg-secondary', !prev);
+      }
+      if ($row.length) $row.toggleClass('table-secondary', !prev);
+      onAjaxFail(xhr);
+    })
+    .always(function(){
+      $input.prop('disabled', false);
+    });
+  });
 
-                                const activoServer = intentoActivo;
-                                $input.prop('checked', activoServer);
+  // === Eliminar usuario ===
+  $(document).on('click', '.js-user-delete', function (e) {
+    e.preventDefault();
+    const $btn = $(this);
+    const id = $btn.data('id');
+    if (!id) return;
+    if (!confirm('¿Eliminar al usuario seleccionado?')) return;
 
-                                if ($badge.length) {
-                                    $badge
-                                            .text(activoServer ? 'Activo' : 'Inactivo')
-                                            .toggleClass('bg-success', activoServer)
-                                            .toggleClass('bg-secondary', !activoServer);
-                                }
-                                $row.toggleClass('table-secondary', !activoServer);
-                            })
-                            .fail(function (xhr) {
-                                $input.prop('checked', !intentoActivo); // revertir si falla
-                                alert('Error al cambiar estatus: ' + (xhr.responseText || xhr.statusText));
-                            })
-                            .always(function () {
-                                $input.prop('disabled', false);
-                            });
-                });
+    $btn.prop('disabled', true);
 
+    $.ajax({
+      url: `${API}/usuariorepositoy/delete/${id}`,
+      type: 'DELETE',
+      dataType: 'json'
+    })
+    .done(function (r, _text, xhr) {
+      if (xhr.status === 204 || (r && r.correct === true)) {
+        const $row = $btn.closest('tr');
+        if ($row.length) $row.remove(); else location.reload();
+      } else {
+        alert((r && r.errorMessage) || 'No se pudo eliminar el usuario.');
+      }
+    })
+    .fail(function(xhr){
+      onAjaxFail(xhr);
+    })
+    .always(function(){
+      $btn.prop('disabled', false);
+    });
+  });
 
-// ==== Eliminar Usuario===//
-
-
-                $(document).on('click', '.js-user-delete', function (e) {
-                    e.preventDefault();
-
-                    const $btn = $(this);
-                    const id = $btn.data('id');
-                    if (!id)
-                        return;
-
-                    if (!confirm('¿Eliminar al usuario seleccionado?'))
-                        return;
-
-                    const token = $('meta[name="_csrf"]').attr('content');
-                    const header = $('meta[name="_csrf_header"]').attr('content');
-
-                    $btn.prop('disabled', true);
-
-                    $.ajax({
-                        url: `http://localhost:8080/usuariorepositoy/delete/${id}`,
-                        type: 'DELETE',
-                        beforeSend: function (xhr) {
-                            xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
-                            if (token && header)
-                                xhr.setRequestHeader(header, token);
-                        }
-                    })
-                            .done(function (r, _text, xhr) {
-                                if (xhr.status >= 200 && xhr.status < 300 && r && r.correct === true) {
-                                    // Quita la fila visualmente
-                                    const $row = $btn.closest('tr');
-                                    if ($row.length) {
-                                        $row.remove();
-                                    } else {
-                                        location.reload();
-                                    }
-                                } else {
-                                    alert((r && r.errorMessage) || 'No se pudo eliminar el usuario.');
-                                }
-                            })
-                            .fail(function (xhr) {
-                                alert('Error al eliminar: ' + (xhr.responseText || xhr.statusText));
-                            })
-                            .always(function () {
-                                $btn.prop('disabled', false);
-                            });
-                });
+})();
+</script>
 
 
-
-            </script>
 
 
     </body>

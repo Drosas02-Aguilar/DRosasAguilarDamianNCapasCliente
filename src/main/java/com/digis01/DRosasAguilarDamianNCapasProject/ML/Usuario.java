@@ -9,7 +9,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 public class Usuario {
 
     private int IdUsuario;
-    private String Username;
+    private String username;
     private String Nombre;
     private String Apellidopaterno;
     private String Apellidomaterno;
@@ -56,7 +56,7 @@ public class Usuario {
             String email, String password, String telefono, String direccion, String celular, String sexo,
              Date fechaNacimiento, int idrol, String curp) {
         this.IdUsuario = idUsuario;
-        this.Username = username;
+        this.username = username;
         this.Nombre = nombre;
         this.Apellidopaterno = apellidopaterno;
         this.Apellidomaterno = apellidomaterno;
@@ -102,11 +102,11 @@ public class Usuario {
     }
 
     public String getUsername() {
-        return Username;
+        return username;
     }
 
     public void setUsername(String username) {
-        Username = username;
+      this.username = username;
     }
 
     public String getApellidopaterno() {

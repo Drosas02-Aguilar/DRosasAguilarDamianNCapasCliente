@@ -4,240 +4,245 @@
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layout}">
 
-<body layout:fragment="body">
-<div class="container py-4" th:object="${usuario}">
-  <!-- Encabezado con foto -->
-  <div class="hero mb-4 d-flex align-items-center justify-content-between gap-3">
-    <div class="d-flex align-items-center gap-3">
-      <!-- Foto usuario -->
-      <div style="width:110px;height:110px" class="rounded-circle overflow-hidden border bg-light">
-        <img th:if="*{imagen} != null and *{imagen} != ''"
-             th:src="'data:image/jpeg;base64,' + *{imagen}"
-             alt="Foto de usuario"
-             class="w-100 h-100 object-fit-cover">
-        <img th:if="*{imagen} == null or *{imagen} == ''"
-             src="https://cdn.jsdelivr.net/gh/edent/SuperTinyIcons/images/svg/user.svg"
-             alt="Sin foto"
-             class="w-100 h-100 p-3">
-      </div>
-      <!-- Datos -->
-      <div>
-        <h1 class="h4 mb-1"><i class="bi bi-person-gear me-2"></i><span th:text="*{nombre} + ' ' + *{apellidopaterno} + ' ' + *{apellidomaterno}">Editar Usuario</span></h1>
-        <p class="mb-0 opacity-75">Aquí puedes visualizar la información y direcciones del usuario.</p>
-      </div>
-    </div>
-  </div>
-
-  <!-- Botones de acción (con sentinelas did) -->
-  <div class="d-flex flex-wrap gap-2 mb-3">
-    <a class="btn btn-warning"
-       th:href="@{/usuario/formEditable(IdUsuario=${usuario.idUsuario}, did=-1)}">
-      <i class="bi bi-person-lines-fill me-1"></i> Editar información de usuario
-    </a>
-    <a class="btn btn-success"
-       th:href="@{/usuario/formEditable(IdUsuario=${usuario.idUsuario}, did=0)}">
-      <i class="bi bi-plus-circle me-1"></i> Agregar dirección
-    </a>
-    <a class="btn btn-outline-secondary" th:href="@{/usuario}">
-      <i class="bi bi-arrow-left"></i> Volver a la lista
-    </a>
-  </div>
-
-  <!-- Datos en pestañas -->
-  <div class="card mb-4">
-    <div class="card-body">
-      <!-- Tabs -->
-      <ul class="nav nav-pills mb-3" role="tablist">
-        <li class="nav-item">
-          <button class="nav-link active" data-bs-toggle="pill" data-bs-target="#datos" type="button" role="tab">
-            <i class="bi bi-person-lines-fill me-1"></i>Datos personales
-          </button>
-        </li>
-        <li class="nav-item">
-          <button class="nav-link" data-bs-toggle="pill" data-bs-target="#contacto" type="button" role="tab">
-            <i class="bi bi-phone me-1"></i>Contacto
-          </button>
-        </li>
-<!--        <li class="nav-item">
-          <button class="nav-link" data-bs-toggle="pill" data-bs-target="#salud" type="button" role="tab">
-            <i class="bi bi-heart-pulse me-1"></i>Salud
-          </button>
-        </li>-->
-        <li class="nav-item">
-          <button class="nav-link" data-bs-toggle="pill" data-bs-target="#rol" type="button" role="tab">
-            <i class="bi bi-shield-check me-1"></i>Rol
-          </button>
-        </li>
-      </ul>
-
-      <div class="tab-content">
-        <!-- Datos personales -->
-        <div class="tab-pane fade show active" id="datos" role="tabpanel">
-          <div class="row g-3 floating">
-            <div class="col-md-4">
-              <div class="form-floating">
-                <input class="form-control" type="text" th:field="*{nombre}" placeholder="Nombre" readonly>
-                <label>Nombre</label>
-              </div>
-            </div>
-            <div class="col-md-4">
-              <div class="form-floating">
-                <input class="form-control" type="text" th:field="*{apellidopaterno}" placeholder="Apellido paterno" readonly>
-                <label>Apellido paterno</label>
-              </div>
-            </div>
-            <div class="col-md-4">
-              <div class="form-floating">
-                <input class="form-control" type="text" th:field="*{apellidomaterno}" placeholder="Apellido materno" readonly>
-                <label>Apellido materno</label>
-              </div>
-            </div>
-            <div class="col-md-4">
-              <div class="form-floating">
-                <input class="form-control text-uppercase" type="text" th:field="*{curp}" maxlength="18" readonly>
-                <label>CURP</label>
-              </div>
-            </div>
-            <div class="col-md-4">
-              <div class="form-floating">
-                <input class="form-control" type="date" th:value="${#dates.format(usuario.fechaNacimiento,'yyyy-MM-dd')}" readonly>
-                <label>Fecha de nacimiento</label>
-              </div>
-            </div>
-            <div class="col-md-4" th:with="sx=${#strings.toUpperCase(#strings.trim(usuario.sexo))}">
-              <input type="hidden" th:value="*{sexo}"/>
-              <input type="text" class="form-control fw-bold text-center" readonly
-                     th:value="${sx == 'M'} ? 'Masculino' : (${sx == 'F'} ? 'Femenino' : 'Sin dato')"
-                     th:classappend="${sx == 'M'} ? ' text-primary' : (${sx == 'F'} ? ' text-danger' : ' text-secondary')" />
-            </div>
-          </div>
-        </div>
-
-        <!-- Contacto -->
-        <div class="tab-pane fade" id="contacto" role="tabpanel">
-          <div class="row g-3 floating">
-            <div class="col-md-4">
-              <div class="form-floating">
-                <input class="form-control" type="text" th:field="*{username}" readonly>
-                <label>Usuario</label>
-              </div>
-            </div>
-            <div class="col-md-4">
-              <div class="form-floating">
-                <input class="form-control" type="email" th:field="*{email}" readonly>
-                <label>Email</label>
-              </div>
-            </div>
-            <div class="col-md-4">
-              <div class="form-floating">
-                <input class="form-control" type="tel" th:field="*{telefono}" readonly>
-                <label>Teléfono</label>
-              </div>
-            </div>
-            <div class="col-md-4">
-              <div class="form-floating">
-                <input class="form-control" type="tel" th:field="*{celular}" readonly>
-                <label>Celular</label>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Salud -->
-<!--        <div class="tab-pane fade" id="salud" role="tabpanel">
-          <div class="row g-3 floating">
-            <div class="col-md-4">
-              <div class="form-floating">
-                <input class="form-control" type="text" th:field="*{tiposangre}" readonly>
-                <label>Tipo de sangre</label>
-              </div>
-            </div>
-          </div>
-        </div>-->
-
-        <!-- Rol -->
-        <div class="tab-pane fade" id="rol" role="tabpanel">
-          <div class="row g-3">
-            <div class="col-md-4 floating">
-              <div class="form-floating">
-                <input class="form-control" type="text" th:value="${usuario.rol != null ? usuario.rol.nombre : ''}" readonly>
-                <label>Nombre del rol</label>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Lista de direcciones -->
-  <div class="card mb-4">
-    <div class="card-header bg-light d-flex justify-content-between align-items-center">
-      <h2 class="h6 mb-0"><i class="bi bi-geo-alt me-2"></i>Direcciones</h2>
-      <span class="badge text-bg-primary" th:text="${usuario.direcciones != null ? #lists.size(usuario.direcciones) : 0}">0</span>
-    </div>
-    <div class="card-body">
-      <div th:if="${usuario.direcciones != null and !#lists.isEmpty(usuario.direcciones)}">
-        <div class="table-responsive">
-          <table class="table table-hover align-middle">
-            <thead class="table-light">
-            <tr>
-              <th>#</th>
-              <th>Calle</th>
-              <th>No. Int</th>
-              <th>No. Ext</th>
-              <th>Colonia</th>
-              <th>CP</th>
-              <th>Municipio</th>
-              <th>Estado</th>
-              <th>País</th>
-              <th class="text-end">Acciones</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr th:each="direccion, iterStat : ${usuario.direcciones}">
-              <td th:text="${iterStat.index + 1}">1</td>
-              <td th:text="${direccion.calle}">Calle</td>
-              <td th:text="${direccion.numeroInterior}">-</td>
-              <td th:text="${direccion.numeroExterior}">-</td>
-              <td th:text="${direccion.colonia != null ? direccion.colonia.nombre : 'Sin colonia'}"></td>
-              <td th:text="${direccion.colonia != null ? direccion.colonia.codigoPostal : ''}"></td>
-              <td th:text="${direccion.colonia?.municipio?.nombre}"></td>
-              <td th:text="${direccion.colonia?.municipio?.estado?.nombre}"></td>
-              <td th:text="${direccion.colonia?.municipio?.estado?.pais?.nombre}"></td>
-              <td class="text-end">
-                <div class="btn-group btn-group-sm">
-                  <a class="btn btn-primary"
-                     th:href="@{/usuario/formEditable(IdUsuario=${usuario.idUsuario}, did=${direccion.idDireccion})}">
-                    <i class="bi bi-pencil-square"></i>
-                  </a>
-                  <a class="btn btn-danger"
-                     th:href="@{/usuario/direccion/delete(idUsuario=${usuario.idUsuario}, idDireccion=${direccion.idDireccion})}"
-                     onclick="return confirm('¿Eliminar esta dirección?')">
-                    <i class="bi bi-trash"></i>
-                  </a>
+    <body layout:fragment="body">
+        <div class="container py-4" th:object="${usuario}">
+            <!-- Encabezado con foto -->
+            <div class="hero mb-4 d-flex align-items-center justify-content-between gap-3">
+                <div class="d-flex align-items-center gap-3">
+                    <!-- Foto usuario -->
+                    <div style="width:110px;height:110px" class="rounded-circle overflow-hidden border bg-light">
+                        <img th:if="*{imagen} != null and *{imagen} != ''"
+                             th:src="'data:image/jpeg;base64,' + *{imagen}"
+                             alt="Foto de usuario"
+                             class="w-100 h-100 object-fit-cover">
+                        <img th:if="*{imagen} == null or *{imagen} == ''"
+                             src="https://cdn.jsdelivr.net/gh/edent/SuperTinyIcons/images/svg/user.svg"
+                             alt="Sin foto"
+                             class="w-100 h-100 p-3">
+                    </div>
+                    <!-- Datos -->
+                    <div>
+                        <h1 class="h4 mb-1"><i class="bi bi-person-gear me-2"></i><span th:text="*{nombre} + ' ' + *{apellidopaterno} + ' ' + *{apellidomaterno}">Editar Usuario</span></h1>
+                        <p class="mb-0 opacity-75">Aquí puedes visualizar la información y direcciones del usuario.</p>
+                    </div>
                 </div>
-              </td>
-            </tr>
-            </tbody>
-          </table>
+            </div>
+
+            <!-- Botones de acción (con sentinelas did) -->
+            <div class="d-flex flex-wrap gap-2 mb-3">
+
+                <a class="btn btn-warning"
+                   th:href="@{/usuario/formEditable(IdUsuario=${usuario.idUsuario}, did=-1)}">
+                    <i class="bi bi-person-lines-fill me-1"></i> Editar información de usuario
+                </a>
+
+                <a  th:if="${isAdmin}" class="btn btn-success"
+                    th:href="@{/usuario/formEditable(IdUsuario=${usuario.idUsuario}, did=0)}">
+                    <i class="bi bi-plus-circle me-1"></i> Agregar dirección
+                </a>
+                <a th:if="${isAdmin}" class="btn btn-outline-secondary" th:href="@{/usuario}">
+                    <i class="bi bi-arrow-left"></i> Volver a la lista
+                </a>
+                <form th:action="@{/usuario/logout}" method="post" class="d-inline">
+                    <button class="btn btn-outline-secondary" type="submit">Cerrar sesión</button>
+                </form>
+            </div>
+
+            <!-- Datos en pestañas -->
+            <div class="card mb-4">
+                <div class="card-body">
+                    <!-- Tabs -->
+                    <ul class="nav nav-pills mb-3" role="tablist">
+                        <li class="nav-item">
+                            <button class="nav-link active" data-bs-toggle="pill" data-bs-target="#datos" type="button" role="tab">
+                                <i class="bi bi-person-lines-fill me-1"></i>Datos personales
+                            </button>
+                        </li>
+                        <li class="nav-item">
+                            <button class="nav-link" data-bs-toggle="pill" data-bs-target="#contacto" type="button" role="tab">
+                                <i class="bi bi-phone me-1"></i>Contacto
+                            </button>
+                        </li>
+                        <!--        <li class="nav-item">
+                                  <button class="nav-link" data-bs-toggle="pill" data-bs-target="#salud" type="button" role="tab">
+                                    <i class="bi bi-heart-pulse me-1"></i>Salud
+                                  </button>
+                                </li>-->
+                        <li class="nav-item">
+                            <button class="nav-link" data-bs-toggle="pill" data-bs-target="#rol" type="button" role="tab">
+                                <i class="bi bi-shield-check me-1"></i>Rol
+                            </button>
+                        </li>
+                    </ul>
+
+                    <div class="tab-content">
+                        <!-- Datos personales -->
+                        <div class="tab-pane fade show active" id="datos" role="tabpanel">
+                            <div class="row g-3 floating">
+                                <div class="col-md-4">
+                                    <div class="form-floating">
+                                        <input class="form-control" type="text" th:field="*{nombre}" placeholder="Nombre" readonly>
+                                        <label>Nombre</label>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-floating">
+                                        <input class="form-control" type="text" th:field="*{apellidopaterno}" placeholder="Apellido paterno" readonly>
+                                        <label>Apellido paterno</label>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-floating">
+                                        <input class="form-control" type="text" th:field="*{apellidomaterno}" placeholder="Apellido materno" readonly>
+                                        <label>Apellido materno</label>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-floating">
+                                        <input class="form-control text-uppercase" type="text" th:field="*{curp}" maxlength="18" readonly>
+                                        <label>CURP</label>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-floating">
+                                        <input class="form-control" type="date" th:value="${#dates.format(usuario.fechaNacimiento,'yyyy-MM-dd')}" readonly>
+                                        <label>Fecha de nacimiento</label>
+                                    </div>
+                                </div>
+                                <div class="col-md-4" th:with="sx=${#strings.toUpperCase(#strings.trim(usuario.sexo))}">
+                                    <input type="hidden" th:value="*{sexo}"/>
+                                    <input type="text" class="form-control fw-bold text-center" readonly
+                                           th:value="${sx == 'M'} ? 'Masculino' : (${sx == 'F'} ? 'Femenino' : 'Sin dato')"
+                                           th:classappend="${sx == 'M'} ? ' text-primary' : (${sx == 'F'} ? ' text-danger' : ' text-secondary')" />
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Contacto -->
+                        <div class="tab-pane fade" id="contacto" role="tabpanel">
+                            <div class="row g-3 floating">
+                                <div class="col-md-4">
+                                    <div class="form-floating">
+                                        <input class="form-control" type="text" th:field="*{username}" readonly>
+                                        <label>Usuario</label>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-floating">
+                                        <input class="form-control" type="email" th:field="*{email}" readonly>
+                                        <label>Email</label>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-floating">
+                                        <input class="form-control" type="tel" th:field="*{telefono}" readonly>
+                                        <label>Teléfono</label>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-floating">
+                                        <input class="form-control" type="tel" th:field="*{celular}" readonly>
+                                        <label>Celular</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Salud -->
+                        <!--        <div class="tab-pane fade" id="salud" role="tabpanel">
+                                  <div class="row g-3 floating">
+                                    <div class="col-md-4">
+                                      <div class="form-floating">
+                                        <input class="form-control" type="text" th:field="*{tiposangre}" readonly>
+                                        <label>Tipo de sangre</label>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>-->
+
+                        <!-- Rol -->
+                        <div class="tab-pane fade" id="rol" role="tabpanel">
+                            <div class="row g-3">
+                                <div class="col-md-4 floating">
+                                    <div class="form-floating">
+                                        <input class="form-control" type="text" th:value="${usuario.rol != null ? usuario.rol.nombre : ''}" readonly>
+                                        <label>Nombre del rol</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Lista de direcciones -->
+            <div class="card mb-4">
+                <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                    <h2 class="h6 mb-0"><i class="bi bi-geo-alt me-2"></i>Direcciones</h2>
+                    <span class="badge text-bg-primary" th:text="${usuario.direcciones != null ? #lists.size(usuario.direcciones) : 0}">0</span>
+                </div>
+                <div class="card-body">
+                    <div th:if="${usuario.direcciones != null and !#lists.isEmpty(usuario.direcciones)}">
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Calle</th>
+                                        <th>No. Int</th>
+                                        <th>No. Ext</th>
+                                        <th>Colonia</th>
+                                        <th>CP</th>
+                                        <th>Municipio</th>
+                                        <th>Estado</th>
+                                        <th>País</th>
+                                        <th th:if="${isAdmin}" class="text-end">Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:each="direccion, iterStat : ${usuario.direcciones}">
+                                        <td th:text="${iterStat.index + 1}">1</td>
+                                        <td th:text="${direccion.calle}">Calle</td>
+                                        <td th:text="${direccion.numeroInterior}">-</td>
+                                        <td th:text="${direccion.numeroExterior}">-</td>
+                                        <td th:text="${direccion.colonia != null ? direccion.colonia.nombre : 'Sin colonia'}"></td>
+                                        <td th:text="${direccion.colonia != null ? direccion.colonia.codigoPostal : ''}"></td>
+                                        <td th:text="${direccion.colonia?.municipio?.nombre}"></td>
+                                        <td th:text="${direccion.colonia?.municipio?.estado?.nombre}"></td>
+                                        <td th:text="${direccion.colonia?.municipio?.estado?.pais?.nombre}"></td>
+                                        <td class="text-end">
+                                            <div class="btn-group btn-group-sm">
+                                                <a th:if="${isAdmin}" class="btn btn-primary"
+                                                   th:href="@{/usuario/formEditable(IdUsuario=${usuario.idUsuario}, did=${direccion.idDireccion})}">
+                                                    <i class="bi bi-pencil-square"></i>
+                                                </a>
+                                                <a th:if="${isAdmin}" class="btn btn-danger"
+                                                   th:href="@{/usuario/direccion/delete(idUsuario=${usuario.idUsuario}, idDireccion=${direccion.idDireccion})}"
+                                                   onclick="return confirm('¿Eliminar esta dirección?')">
+                                                    <i class="bi bi-trash"></i>
+                                                </a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div th:if="${usuario.direcciones == null or #lists.isEmpty(usuario.direcciones)}" class="text-center py-4">
+                        <i class="bi bi-inboxes display-6 text-muted d-block mb-2"></i>
+                        <span class="text-muted d-block mb-3">No tiene direcciones registradas</span>
+                        <a class="btn btn-success"
+                           th:href="@{/usuario/formEditable(IdUsuario=${usuario.idUsuario}, did=0)}">
+                            <i class="bi bi-plus-circle me-1"></i> Agregar dirección
+                        </a>
+                    </div>
+                </div>
+            </div>
         </div>
-      </div>
-      <div th:if="${usuario.direcciones == null or #lists.isEmpty(usuario.direcciones)}" class="text-center py-4">
-        <i class="bi bi-inboxes display-6 text-muted d-block mb-2"></i>
-        <span class="text-muted d-block mb-3">No tiene direcciones registradas</span>
-        <a class="btn btn-success"
-           th:href="@{/usuario/formEditable(IdUsuario=${usuario.idUsuario}, did=0)}">
-          <i class="bi bi-plus-circle me-1"></i> Agregar dirección
-        </a>
-      </div>
-    </div>
-  </div>
-</div>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
 
 
 
-</body>
+    </body>
 </html>

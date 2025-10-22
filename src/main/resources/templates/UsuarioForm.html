@@ -1,7 +1,10 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="es">
 <head>
+    
   <meta charset="UTF-8" />
+  <meta name="jwt" th:content="${session.JWT_TOKEN}"/>
+
   <title>Formulario</title>
 
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -342,7 +345,7 @@
                    placeholder="Ej. O+, A-" maxlength="5">
           </div>-->
 
-          <div class="col-md-4">
+          <div th:if="${isAdmin}" class="col-md-4">
             <label class="form-label fw-bold">Rol</label>
             <select class="form-select" th:field="*{rol.idRol}">
               <option value="0" disabled>Selecciona un rol</option>
@@ -779,10 +782,31 @@ document.addEventListener('DOMContentLoaded', ()=>{
 });
 
 </script>
-
-
-
-
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+(function(){
+  // JWT inyectado por Thymeleaf desde la sesión
+  const jwt = document.querySelector('meta[name="jwt"]')?.content || '';
+
+  // Agrega Authorization a TODAS las peticiones jQuery
+  $.ajaxSetup({
+    beforeSend: function(xhr){
+      xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+      if (jwt) xhr.setRequestHeader('Authorization', 'Bearer ' + jwt);
+    },
+    // no usamos cookies de sesión cross-site
+    xhrFields: { withCredentials: false }
+  });
+
+  // Manejo global de errores: redirige en 401/403
+  $(document).ajaxError(function(_ev, xhr){
+    if (xhr && xhr.status === 401) {
+      window.location.href = '/usuario/login?error=Sesion%20caducada';
+    } else if (xhr && xhr.status === 403) {
+      window.location.href = '/usuario/403';
+    }
+  });
+})();
+</script>
 </body>
 </html>
